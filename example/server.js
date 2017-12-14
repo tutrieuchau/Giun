@@ -46,6 +46,7 @@ app.use('/register', index.register);
 app.use('/logout', index.logout);
 app.use('/dashboard',index.dashboard);
 app.use('/404',index.er404);
+app.use('/post', index.post);
 
 app.get('/robots.txt', (req, res) => {
   res.type('text/plain');

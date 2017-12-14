@@ -1,14 +1,16 @@
 const express = require('express');
 const router = express.Router();
 router.get('/', (req, res) => {
-    res.render('post');
-});
-router.post('/',(req,res) => {
-    console.log(req.body.username);
-    let username = req.body.username;
-    let password = req.body.password;
-    if(username === 'admin' && password ==='admin'){
+    if(req.session && req.session.user){
+        if(req.session.user == 'admin'){
+            res.render('post');
+        }else{
+            req.redirect('/login'); 
+        }
         
+    }else{
+        res.redirect('/login');
     }
+
 });
 module.exports = router;

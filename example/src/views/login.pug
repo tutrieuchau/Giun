@@ -19,8 +19,8 @@ html(lang='en')
     .form
       .thumbnail
         img(src='images/hat.svg')
-      form.register-form
-        input(type='text',name='name',placeholder='Name')
+      form.register-form(action='register' method='POST')
+        input(type='text',name='username',placeholder='Username')
         input(type='password',name='password', placeholder='Password')
         input(type='text',name='mail',placeholder='Email address')
         button#btnCreate(type='submit') create

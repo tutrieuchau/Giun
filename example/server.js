@@ -6,6 +6,7 @@ const compression = require('compression');
 const favicon = require('serve-favicon');
 const path = require('path');
 const http = require('http');
+var session = require('client-sessions');
 
 const index = require('./src/routes');
 
@@ -18,6 +19,13 @@ app.use(logger('dev'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
+/** Sesssion */
+app.use(session({
+  cookieName: 'session',
+  secret: 'wdsGD6HWcIXarvHc6N68f7Mz8hc2',
+  duration: 30 * 60 * 1000,
+  activeDuration: 5 * 60 * 1000,
+}));
 // Load View Engine
 app.set('views', path.join(__dirname, 'src', 'views'));
 app.set('view engine', 'pug');
@@ -32,9 +40,10 @@ app.use(
 );
 
 // App routes
-app.use('/', index.screen1);
-app.use('/screen2', index.screen2);
+app.use('/', index.login);
 app.use('/login', index.login);
+app.use('/register', index.register);
+app.use('/logout', index.logout);
 app.use('/dashboard',index.dashboard);
 app.use('/404',index.er404);
 
@@ -43,10 +52,7 @@ app.get('/robots.txt', (req, res) => {
   res.send('User-agent: *\nDisallow: /');
 });
 
-// Catch 404 Errors and forward them to error handler
 app.use((req, res, next) => {
-  // const err = new Error('Not Found');
-  // err.status = 404;
   res.redirect('/404');
 });
 
@@ -54,19 +60,12 @@ app.use((req, res, next) => {
 app.use((err, req, res) => {
   const error = app.get('env') === 'development' ? err : {};
   const status = err.status;
-
-  // Response to the client
   res.status(status).json({
     error: {
       message: error.message
     }
   });
 });
-
-// Listen server
-// app.listen(3000, () => {
-//   console.log('Server API running at port 3000');
-// });
 
 var server = http.createServer(app);
 server.listen(8080, function () {

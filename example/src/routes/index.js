@@ -1,7 +1,6 @@
 const screen1 = require('./screen1');
 const screen2 = require('./screen2');
-const download = require('./download');
-const importEmp = require('./importEmp');
-const exportExcel = require('./export')
+const login = require('./login');
+const dashboard = require('./dashboard');
 
-module.exports = { screen1, screen2, download, importEmp ,exportExcel };
+module.exports = { login,dashboard,screen1, screen2};

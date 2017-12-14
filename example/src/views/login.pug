@@ -1,0 +1,42 @@
+doctype html
+html(lang='en')
+  head
+    meta(charset='UTF-8')
+    title Flat Login Form
+    //- link(rel='stylesheet', href='https://cdnjs.cloudflare.com/ajax/libs/meyer-reset/2.0/reset.min.css')
+    //- link(rel='stylesheet prefetch', href='https://fonts.googleapis.com/css?family=Roboto:400,100,300,500,700,900')
+    //- link(rel='stylesheet prefetch', href='https://fonts.googleapis.com/css?family=Montserrat:400,700')
+    link(rel='stylesheet prefetch', href='css/font-awesome.css')
+    link(rel='stylesheet', href='css/style.css')
+  body
+    .container
+      .info
+        h1 Pikerfree
+        span
+          | Made with 
+          i.fa.fa-heart
+          |  by Piker
+    .form
+      .thumbnail
+        img(src='images/hat.svg')
+      form.register-form
+        input(type='text',name='name',placeholder='Name')
+        input(type='password',name='password', placeholder='Password')
+        input(type='text',name='mail',placeholder='Email address')
+        button#btnCreate(type='submit') create
+        p.message
+          | Already registered? 
+          a(href='#') Sign In
+      form.login-form(method="POST")
+        input#loginUserName(type='text',name='username', placeholder='Username')
+        input#loginPassword(type='password',name='password', placeholder='Password')
+        button#btnLogin(type='submit') login
+        p.message
+          | Not registered? 
+          a(href='#') Create an account
+    script(src='js/jquery-1.11.1.js')
+    script(src='js/index.js')
+    script.
+        $('#btnLogin').click(()=>{
+           
+        });

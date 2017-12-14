@@ -37,6 +37,7 @@ app.use('/screen2', index.screen2);
 app.use('/download', index.download);
 app.use('/imp_emp', index.importEmp);
 app.use('/export', index.exportExcel);
+app.use('/login', index.login);
 
 app.get('/robots.txt', (req, res) => {
   res.type('text/plain');

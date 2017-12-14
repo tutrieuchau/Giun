@@ -8,7 +8,6 @@ admin.initializeApp({
 });
 const db = admin.database();
 const getAllFireBaseData = () => {
-  // let ref = db.ref("server/saving-data/fireblog");
   let ref = db.ref("users");
   var usersRef = ref.child('users');
   // Attach an asynchronous callback to read the data at our posts reference
@@ -27,6 +26,10 @@ const getAllUsers = async() => {
       reject( err );
     } );
   });
+}
+const addUser = (user) => {
+  var usersRef = ref.child('users');
+  usersRef.set(user);
 }
 module.exports = {
   getAllFireBaseData,

@@ -34,10 +34,9 @@ app.use(
 // App routes
 app.use('/', index.screen1);
 app.use('/screen2', index.screen2);
-app.use('/download', index.download);
-app.use('/imp_emp', index.importEmp);
-app.use('/export', index.exportExcel);
 app.use('/login', index.login);
+app.use('/dashboard',index.dashboard);
+app.use('/404',index.er404);
 
 app.get('/robots.txt', (req, res) => {
   res.type('text/plain');
@@ -46,10 +45,9 @@ app.get('/robots.txt', (req, res) => {
 
 // Catch 404 Errors and forward them to error handler
 app.use((req, res, next) => {
-  const err = new Error('Not Found');
-  err.status = 404;
-
-  next(err);
+  // const err = new Error('Not Found');
+  // err.status = 404;
+  res.redirect('/404');
 });
 
 // Error handler function
@@ -71,7 +69,6 @@ app.use((err, req, res) => {
 // });
 
 var server = http.createServer(app);
-server.setTimeout(600*60*1000); // 600 * 60 seconds * 1000 msecs
-server.listen(3000, function () {
-  console.log('Server API running at port 3000');
+server.listen(8080, function () {
+  console.log('Server API running at port 8080');
 });

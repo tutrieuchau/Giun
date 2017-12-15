@@ -23,7 +23,7 @@ block body
                 .user-btm-box
                     .col-md-12.col-sm-12.text-center
                         h5 #{user.slogan}
-            .white-box
+            #postBox.white-box
                 h3.box-title POSTS
                 .table-responsive
                     table#postsTable.table
@@ -42,7 +42,7 @@ block body
                     .form-group
                         label.col-md-12 Full Name
                         .col-md-12
-                            input.form-control.form-control-line(type='text',name = 'username',value = user.name,placeholder='Your Name')
+                            input.form-control.form-control-line(type='text',name = 'name',value = user.name,placeholder='Your Name')
                     .form-group
                         label.col-md-12(for='example-email') Email
                         .col-md-12
@@ -54,21 +54,29 @@ block body
                     .form-group
                         label.col-md-12 Phone No
                         .col-md-12
-                            input.form-control.form-control-line(type='text',name='phone',placeholder='123 456 7890',value=user.phoneNo)
+                            input.form-control.form-control-line(type='text',name='phoneNumber',placeholder='123 456 7890',value=user.phoneNumber)
                     .form-group
                         label.col-md-12 Slogan
                         .col-md-12
-                            textarea.form-control.form-control-line(name='slogan',rows='5',value=user.slogan)
+                            textarea.form-control.form-control-line(name='slogan',rows='5',value=user.slogan) #{user.slogan}
+                    //hidden field
                     .form-group
                         .col-sm-12
                             input#actionType.form-control.form-control-line(type='text',name='type',value=type,style='display:none')
+                    
                     .form-group
                         .col-sm-12
+                            input.form-control.form-control-line(type='text',name='id',value=user.id,style='display:none')
+                    .form-group
+                        .col-sm-4
                             button#btnAction.btn.btn-success Update Profile
+                        .col-sm-4
+                            a.btn.btn-success(href='/users') Cancel
 block scripts
     script.
         $( document ).ready(function() {
             if($('#actionType').val() == 'add'){
                 document.getElementById('btnAction').innerText = 'Add User';
+                $("#postBox").hide();
             }
         });

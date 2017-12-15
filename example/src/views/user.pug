@@ -13,6 +13,7 @@ block body
         .col-sm-12
             .white-box
                 h3.box-title USERS
+                a.btn.btn-success(href="/users/add") Add User
                 .table-responsive
                     table#usersTable.table
                         thead
@@ -21,6 +22,7 @@ block body
                             th Phone Number
                             th Address
                             th Posts
+                            th
                         tbody
                             each user in users
                                 tr(data-expanded='true')
@@ -29,7 +31,11 @@ block body
                                     td= user.email
                                     td= user.phoneNumber
                                     td= user.address
-                                    td= user.posts.length
+                                    td #{user.posts ? user.posts.length : 0 } 
+                                    td
+                                        a(href='/users/deleteUser'+user.id)
+                                            i.fa.fa-trash
+
 block scripts
     script.
         $('#usersTable').DataTable();

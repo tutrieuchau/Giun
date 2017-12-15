@@ -19,16 +19,19 @@ const getAllUsers = async () => {
   });
 }
 const addUser = (user) => {
-  let ref = db.ref("users");
-  return new Promise((resolve,reject) => {
-    ref.on('value', snapshot => {
-        resolve(snapshot.val() );
-        console.log(snapshot.val());
-    }, err => {
-      reject( err );
-      console.log(err);
-    } );
+  db.ref("users").child(user.id).set(user);
+}
+const updateUser = (user) => {
+  db.ref("users").child(user.id).update({
+    'name':user.name,
+    'email':user.email,
+    'phoneNumber':user.phoneNumber,
+    'slogan':user.slogan,
+    'address':user.address
   });
+}
+const removeUser = (userId) =>{
+  db.ref("users").child(userId).remove();
 }
 const getAllPost = () => {
   let ref = db.ref("posts");
@@ -55,5 +58,8 @@ const getUserByUserId = (userId) =>{
 module.exports = {
   getAllUsers,
   getUserByUserId,
-  getAllPost
+  getAllPost,
+  addUser,
+  updateUser,
+  removeUser
 };

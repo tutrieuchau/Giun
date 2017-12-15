@@ -2,7 +2,13 @@ const express = require('express');
 const router = express.Router();
 const firebase = require('../firebase');
 router.get('/',async (req, res) => {
-    // firebase.getAllFireBaseData();
+
+    /** check login */
+    if(!req.session||req.session&& !req.session.user){
+        res.redirect('/login');
+        return;
+    }
+
     let posts = await firebase.getAllPost();
     let users = await firebase.getAllUsers();
     let removeIndex = [];

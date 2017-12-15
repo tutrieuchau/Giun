@@ -3,57 +3,44 @@ extends menu
 block css
 
 block body
-    .container-fluid
-    .row
-        .col-md-12
-        .card
-            .header
-            h4.title Striped Table with Hover
-            p.category Here is a subtitle for this table
-            .content.table-responsive.table-full-width
-            table.table.table-hover.table-striped
-                thead
-                th ID
-                th Name
-                th Salary
-                th Country
-                th City
-                tbody
-                tr
-                    td 1
-                    td Dakota Rice
-                    td $36,738
-                    td Niger
-                    td Oud-Turnhout
-                tr
-                    td 2
-                    td Minerva Hooper
-                    td $23,789
-                    td Curaçao
-                    td Sinaai-Waas
-                tr
-                    td 3
-                    td Sage Rodriguez
-                    td $56,142
-                    td Netherlands
-                    td Baileux
-                tr
-                    td 4
-                    td Philip Chaney
-                    td $38,735
-                    td Korea, South
-                    td Overland Park
-                tr
-                    td 5
-                    td Doris Greene
-                    td $63,542
-                    td Malawi
-                    td Feldkirchen in Kärnten
-                tr
-                    td 6
-                    td Mason Porter
-                    td $78,615
-                    td Chile
-                    td Gloucester
-
+    section.wrapper
+        .table-agile-info
+            .panel.panel-default
+                .panel-heading
+                    | POST LIST
+                div
+                    table.table(ui-jq='footable')
+                        thead
+                            tr
+                                th(data-breakpoints='xs')
+                                    a(href='/edit') Title
+                                th Category
+                                th Author
+                                th(data-breakpoints='xs') Description
+                                th(data-breakpoints='xs') Date
+                        tbody#postBody
+                            tr(data-expanded='true')
+                                td Old laptop
+                                td Dennise
+                                td Dung em
+                                td I am the Frozen Throne. I come to the web green
+                                td 2017/12/22
+                            tr(data-expanded='true')
+                                td Old laptop
+                                td Dennise
+                                td Dung em
+                                td I am the Frozen Throne. I come to the web green
+                                td 2017/12/22
+                            tr(data-expanded='true')
+                                td Old laptop
+                                td Dennise
+                                td Dung em
+                                td I am the Frozen Throne. I come to the web green
+                                td 2017/12/22
+                            tr(data-expanded='true')
+                                td Old laptop
+                                td Dennise
+                                td Dung em
+                                td I am the Frozen Throne. I come to the web green
+                                td 2017/12/22
 block scripts

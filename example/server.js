@@ -44,9 +44,10 @@ app.use('/', index.login);
 app.use('/login', index.login);
 app.use('/register', index.register);
 app.use('/logout', index.logout);
-app.use('/dashboard',index.dashboard);
-app.use('/404',index.er404);
-app.use('/post', index.post);
+app.use('/dashboard', index.dashboard);
+app.use('/404', index.er404);
+app.use('/posts', index.post);
+app.use('/users', index.user);
 
 app.get('/robots.txt', (req, res) => {
   res.type('text/plain');
@@ -69,6 +70,6 @@ app.use((err, req, res) => {
 });
 
 var server = http.createServer(app);
-server.listen(8080, function () {
-  console.log('Server API running at port 8080');
+server.listen(8000, function () {
+  console.log('Server API running at port 8000');
 });

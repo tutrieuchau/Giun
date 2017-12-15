@@ -7,7 +7,7 @@ admin.initializeApp({
   databaseURL: "https://pikerfree.firebaseio.com"
 });
 const db = admin.database();
-const getAllUsers = async() => {
+const getAllUsers = async () => {
   let ref = db.ref("users");
   return new Promise((resolve,reject) => {
     ref.on('value', snapshot => {
@@ -18,8 +18,16 @@ const getAllUsers = async() => {
   });
 }
 const addUser = (user) => {
-  var usersRef = ref.child('users');
-  usersRef.set(user);
+  let ref = db.ref("users");
+  return new Promise((resolve,reject) => {
+    ref.on('value', snapshot => {
+        resolve(snapshot.val() );
+        console.log(snapshot.val());
+    }, err => {
+      reject( err );
+      console.log(err);
+    } );
+  });
 }
 const getAllPost = () => {
   let ref = db.ref("posts");

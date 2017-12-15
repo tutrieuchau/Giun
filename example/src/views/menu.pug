@@ -11,7 +11,9 @@ html
     link(href='css/style-responsive.css', rel='stylesheet')
     link(rel='stylesheet', href='css/font.css', type='text/css')
     link(href='css/font-awesome.css', rel='stylesheet')
+    link(href='css/datatables.min.css' rel='stylesheet' type='text/css')
     script(src='js/jquery2.0.3.min.js')
+    script(src='js/datatables.min.js')
     block css
   body
     section#container
@@ -25,7 +27,7 @@ html
         .top-nav.clearfix
           ul.nav.pull-right.top-menu
             li.dropdown
-              a.dropdown-toggle(data-toggle='dropdown', href='/logout',style='Padding-left:5px')
+              a.dropdown-toggle(href='/logout',style='Padding-left:5px')
                 span.username  Log out
       aside
         #sidebar.nav-collapse
@@ -51,7 +53,5 @@ html
     script(src='js/scripts.js')
     script(src='js/jquery.slimscroll.js')
     script(src='js/jquery.nicescroll.js')
-    script(src='js/jquery.fileupload.js')
-    script(src='js/script.js')
     script(src='js/jquery.scrollTo.js')
     block scripts

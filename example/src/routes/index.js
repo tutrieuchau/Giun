@@ -4,5 +4,6 @@ const er404 = require('./404');
 const logout = require('./logout');
 const register = require('./register');
 const post = require('./post');
+const user = require('./user')
 
-module.exports = { login,register,logout,post,dashboard,er404};
+module.exports = { login,register,logout,post,user,dashboard,er404};

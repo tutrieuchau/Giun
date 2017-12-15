@@ -3,7 +3,7 @@ const router = express.Router();
 router.get('/', (req, res) => {
     if(req.session && req.session.user){
         if(req.session.user == 'admin'){
-            res.render('post');
+            res.render('profile');
         }else{
             req.redirect('/login'); 
         }

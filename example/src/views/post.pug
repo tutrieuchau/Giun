@@ -1,46 +1,37 @@
-extends menu
+extends main
 
 block css
 
 block body
-    section.wrapper
-        .table-agile-info
-            .panel.panel-default
-                .panel-heading
-                    | POST LIST
-                div
-                    table.table(ui-jq='footable')
+
+    .row.bg-title
+        .col-lg-3.col-md-4.col-sm-4.col-xs-12
+            h4.page-title Basic Table
+        // /.col-lg-12
+        // /row
+    .row
+        .col-sm-12
+            .white-box
+                h3.box-title POSTS
+                .table-responsive
+                    table#postsTable.table
                         thead
-                            tr
-                                th(data-breakpoints='xs')
-                                    a(href='/edit') Title
-                                th Category
-                                th Author
-                                th(data-breakpoints='xs') Description
-                                th(data-breakpoints='xs') Date
-                        tbody#postBody
-                            tr(data-expanded='true')
-                                td Old laptop
-                                td Dennise
-                                td Dung em
-                                td I am the Frozen Throne. I come to the web green
-                                td 2017/12/22
-                            tr(data-expanded='true')
-                                td Old laptop
-                                td Dennise
-                                td Dung em
-                                td I am the Frozen Throne. I come to the web green
-                                td 2017/12/22
-                            tr(data-expanded='true')
-                                td Old laptop
-                                td Dennise
-                                td Dung em
-                                td I am the Frozen Throne. I come to the web green
-                                td 2017/12/22
-                            tr(data-expanded='true')
-                                td Old laptop
-                                td Dennise
-                                td Dung em
-                                td I am the Frozen Throne. I come to the web green
-                                td 2017/12/22
+                            th Title
+                            th Category
+                            th Author
+                            th Description
+                            th Date
+                        tbody
+                             each post in posts
+                                tr(data-expanded='true')
+                                    td 
+                                        a(href='posts/detail/'+ post.postId) #{post.title}
+                                    td= post.category
+                                    td
+                                        a(href='users/detail/'+ post.ownerId) #{post.author}
+                                    td= post.shortContent
+                                    td= post.date
 block scripts
+    script.
+        $('#postTable').DataTable();
+        

@@ -1,0 +1,36 @@
+extends main
+
+block css
+
+block body
+
+    .row.bg-title
+        .col-lg-3.col-md-4.col-sm-4.col-xs-12
+            h4.page-title USERS
+        // /.col-lg-12
+        // /row
+    .row
+        .col-sm-12
+            .white-box
+                h3.box-title USERS
+                .table-responsive
+                    table#usersTable.table
+                        thead
+                            th Name
+                            th Email
+                            th Phone Number
+                            th Address
+                            th Posts
+                        tbody
+                            each user in users
+                                tr(data-expanded='true')
+                                    td 
+                                        a(href='/users/profile/'+ user.id) #{user.name}
+                                    td= user.email
+                                    td= user.phoneNumber
+                                    td= user.address
+                                    td= user.posts.length
+block scripts
+    script.
+        $('#usersTable').DataTable();
+        

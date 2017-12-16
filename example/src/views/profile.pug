@@ -13,59 +13,43 @@ block body
         .col-md-4.col-xs-12
             .white-box
                 .user-bg
-                    img(width='100%', alt='user', src='menu/plugins/images/large/img1.jpg')
+                    img(width='100%', alt='user', src='firebase/userimages/default_profile.jpg')
                     .overlay-box
                         .user-content
                             a(href='javascript:void(0)')
-                            img.thumb-lg.img-circle(src='menu/plugins/images/users/genu.jpg', alt='img')
-                            h4.text-white User Name
-                            h5.text-white info@myadmin.com
+                            img.thumb-lg.img-circle(src='firebase/userimages/F696gEJCteXys5VY88PAv5la7N33.jpg', alt='img')
+                            h4.text-white #{user.name}
+                            h5.text-white #{user.email}
                 .user-btm-box
-                    .col-md-4.col-sm-4.text-center
-                        p.text-purple
-                            i.ti-facebook
-                        h1 258
-                    .col-md-4.col-sm-4.text-center
-                        p.text-blue
-                            i.ti-twitter
-                        h1 125
-                    .col-md-4.col-sm-4.text-center
-                        p.text-danger
-                            i.ti-dribbble
-                        h1 556
+                    .col-md-12.col-sm-12.text-center
+                        h5 #{user.slogan}
         .col-md-8.col-xs-12
             .white-box
-                form.form-horizontal.form-material
+                form.form-horizontal.form-material(type='POST')
                     .form-group
                         label.col-md-12 Full Name
                         .col-md-12
-                            input.form-control.form-control-line(type='text', placeholder='Johnathan Doe')
+                            input.form-control.form-control-line(type='text',name = 'username',value = user.name,placeholder='Your Name')
                     .form-group
                         label.col-md-12(for='example-email') Email
                         .col-md-12
-                            input#example-email.form-control.form-control-line(type='email', placeholder='johnathan@admin.com', name='example-email')
+                            input#example-email.form-control.form-control-line(type='email',name = 'email',value=user.email placeholder='xxx@admin.com')
                     .form-group
-                        label.col-md-12 Password
+                        label.col-md-12 Address
                         .col-md-12
-                            input.form-control.form-control-line(type='password', value='password')
+                            input.form-control.form-control-line(type='text',name='address',value= user.address)
                     .form-group
                         label.col-md-12 Phone No
                         .col-md-12
-                            input.form-control.form-control-line(type='text', placeholder='123 456 7890')
+                            input.form-control.form-control-line(type='text',name='phone',placeholder='123 456 7890',value=user.phoneNo)
                     .form-group
-                        label.col-md-12 Message
+                        label.col-md-12 Slogan
                         .col-md-12
-                            textarea.form-control.form-control-line(rows='5')
-                    .form-group
-                        label.col-sm-12 Select Country
-                        .col-sm-12
-                            select.form-control.form-control-line
-                                option London
-                                option India
-                                option Usa
-                                option Canada
-                                option Thailand
+                            textarea.form-control.form-control-line(name='slogan',rows='5',value=user.slogan)
                     .form-group
                         .col-sm-12
-                            button.btn.btn-success Update Profile
+                            input.form-control.form-control-line(type='text',name='type',value=type,style='display:hidden')
+                    .form-group
+                        .col-sm-12
+                            button#btnAction.btn.btn-success Update Profile
 block scripts

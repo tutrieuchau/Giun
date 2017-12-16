@@ -10,7 +10,14 @@ router.get('/',async (req, res) => {
     }, this);
     res.render('user',{users:userArray});
 });
-router.get('/profile', (req,res) => {
-     res.render('profile');
+
+router.get('/:id', (req,res) => {
+    var user = {name:'',email:'',slogan:'',address:'',phoneNo:''}
+    res.render('main',{user:user,type:'add'});
+});
+
+router.get('/add',(req,res)=>{
+    var user = {name:'',email:'',slogan:'',address:'',phoneNo:''}
+    res.render('profile',{user:user,type:'add'});
 });
 module.exports = router;

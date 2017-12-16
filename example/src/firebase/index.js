@@ -12,6 +12,7 @@ const getAllUsers = async () => {
   return new Promise((resolve,reject) => {
     ref.on('value', snapshot => {
         resolve(snapshot.val() );
+        console.log(snapshot.val());
     }, err => {
       reject( err );
     } );

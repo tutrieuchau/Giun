@@ -23,6 +23,7 @@ block body
                             th Address
                             th Posts
                             th
+                            th
                         tbody
                             each user in users
                                 tr(data-expanded='true')
@@ -31,12 +32,17 @@ block body
                                     td= user.email
                                     td= user.phoneNumber
                                     td= user.address
-                                    td #{user.posts ? user.posts.length : 0 } 
+                                    td #{user.posts ? user.posts.length : 0 }
+                                    td 
+                                        a(href='/users/'+user.id)
+                                            i.fa.fa-pencil
                                     td
                                         a(href='/users/deleteUser'+user.id)
                                             i.fa.fa-trash
 
 block scripts
     script.
-        $('#usersTable').DataTable();
+        $('#usersTable').DataTable({
+            "bLengthChange": false
+        });
         

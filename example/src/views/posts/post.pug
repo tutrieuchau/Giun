@@ -21,16 +21,24 @@ block body
                             th Author
                             th Description
                             th Date
+                            th
+                            th
                         tbody
                              each post in posts
                                 tr(data-expanded='true')
                                     td 
-                                        a(href='posts/detail/'+ post.postId) #{post.title}
+                                        a(href='/posts/'+ post.postId) #{post.title}
                                     td= post.category
                                     td
-                                        a(href='users/'+ post.ownerId) #{post.author}
+                                        a(href='/users/'+ post.ownerId) #{post.author}
                                     td= post.shortContent
                                     td= post.date
+                                    td 
+                                        a(href='/posts/'+post.postId)
+                                            i.fa.fa-pencil
+                                    td
+                                        a(href='/posts/deletePost'+post.postId)
+                                            i.fa.fa-trash
 block scripts
     script.
         $('#postTable').DataTable();

@@ -24,7 +24,7 @@ router.get('/:id',async (req,res) => {
         res.redirect('/login');
         return;
     }
-
+    /** Add or Delete User */
     let userId = req.params.id;
     if(userId == 'add'){
         let user = {name:'',email:'',slogan:'',address:'',phoneNo:'',avatarLink:'userImages/default_profile.jpg'}
@@ -35,29 +35,12 @@ router.get('/:id',async (req,res) => {
         res.redirect('/users');
         return;
     }
-    let users = await firebase.getAllUsers();
-    let posts = await firebase.getAllPost();
-   /** Clean undefine posts */
-    let cleanPosts = [];
-    let userPosts = [];
-    for(let index =0;index < posts.length; index ++){
-        var post = posts[index];
-        if(post){
-            post['shortContent'] = post.description.substring(0,20) + "...";
-            if(post.ownerId == userId){
-                userPosts.push(post);
-            }
-        }else{
-            cleanPosts.push(index);
-        }
-    }
-    cleanPosts.forEach(index=>{
-        posts.splice(index, 1);
-    });
-    let user = users[userId];
+
+    let user = await firebase.getUser(userId);
+    let userPosts = await firebase.getAllUserPosts(userId);
     if(!user){
-        user = {name:'',email:'',slogan:'',address:'',phoneNo:'',avatarLink:'userImages/default_profile.jpg'}
-        res.render('users/profile',{user:user,type:'add',posts:[]});
+        res.render('404');
+        return;
     }else{
         if(AVATAR.indexOf(user.avatarLink.replace('userImages/','')) == -1){
             user.avatarLink = 'userImages/default_profile.jpg';

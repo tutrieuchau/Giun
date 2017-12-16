@@ -29,6 +29,16 @@ router.get('/',async (req, res) => {
     removeIndex.forEach(index => {
         posts.splice(index, 1);
     });
-    res.render('post',{posts:posts});
+    res.render('posts/post',{posts:posts});
+});
+router.get('/:id',async (req,res) => {
+    if(!req.session||req.session&& !req.session.user){
+        res.redirect('/login');
+        return;
+    }
+    let postId = req.params.id;
+    let post = await firebase.getPost(postId);
+    let user = await firebase.getUser(post.ownerId);
+    res.render('posts/details',{post:post,user:user,type:'edit'});
 });
 module.exports = router;

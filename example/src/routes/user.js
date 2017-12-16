@@ -11,20 +11,25 @@ router.get('/',async (req, res) => {
     }, this);
     res.render('user',{users:userArray});
 });
-
 router.get('/:id',async (req,res) => {
     let userId = req.params.id;
     let users = await firebase.getAllUsers();
     let posts = await firebase.getAllPost();
+    posts.forEach(post=>{
+        if(!post){
+            posts.splice(posts.indexOf(post), 1);
+        }
+    });
     let user = users[userId];
     if(userId == 'add' || !user){
-        user = {name:'',email:'',slogan:'',address:'',phoneNo:''}
-        res.render('profile',{user:user,type:'add'});
+        user = {name:'',email:'',slogan:'',address:'',phoneNo:'',avatarLink:'userImages/default_profile.jpg'}
+        res.render('profile',{user:user,type:'add',posts:[]});
     }else{
         if(AVATAR.indexOf(user.avatarLink.replace('userImages/','')) == -1){
             user.avatarLink = 'userImages/default_profile.jpg';
         }
-        res.render('profile',{user:user,type:'edit'});
+        let userPosts = posts? posts.find(ob =>ob.ownerId == user.id):[];
+        res.render('profile',{user:user,type:'edit',posts:userPosts});
     }
 });
 module.exports = router;

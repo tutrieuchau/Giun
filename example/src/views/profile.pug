@@ -17,15 +17,28 @@ block body
                     .overlay-box
                         .user-content
                             a(href='javascript:void(0)')
-                            img.thumb-lg.img-circle(src='firebase/userimages/F696gEJCteXys5VY88PAv5la7N33.jpg', alt='img')
+                            img.thumb-lg.img-circle(src='firebase/' + user.avatarLink, alt='img')
                             h4.text-white #{user.name}
                             h5.text-white #{user.email}
                 .user-btm-box
                     .col-md-12.col-sm-12.text-center
                         h5 #{user.slogan}
+            .white-box
+                h3.box-title POSTS
+                .table-responsive
+                    table#postsTable.table
+                        thead
+                            th Title
+                            th Description
+                        tbody
+                             each post in posts
+                                tr(data-expanded='true')
+                                    td 
+                                        a(href='posts/detail/'+ post.postId) #{post.title}
+                                    td= post.shortContent
         .col-md-8.col-xs-12
             .white-box
-                form.form-horizontal.form-material(type='POST')
+                form.form-horizontal.form-material(method='POST',action='/users')
                     .form-group
                         label.col-md-12 Full Name
                         .col-md-12
@@ -48,8 +61,14 @@ block body
                             textarea.form-control.form-control-line(name='slogan',rows='5',value=user.slogan)
                     .form-group
                         .col-sm-12
-                            input.form-control.form-control-line(type='text',name='type',value=type,style='display:none')
+                            input#actionType.form-control.form-control-line(type='text',name='type',value=type,style='display:none')
                     .form-group
                         .col-sm-12
                             button#btnAction.btn.btn-success Update Profile
 block scripts
+    script.
+        $( document ).ready(function() {
+            if($('#actionType').val() == 'add'){
+                document.getElementById('btnAction').innerText = 'Add User';
+            }
+        });

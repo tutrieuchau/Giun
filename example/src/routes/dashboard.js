@@ -4,7 +4,7 @@ router.get('/', (req, res) => {
     if(req.session && req.session.user){
         if(req.session.user == 'admin'){
             var user = {name:'',email:'',slogan:'',address:'',phoneNo:''}
-            res.render('profile',{user:user,type:'add'});
+            res.redirect('/post');
         }else{
             req.redirect('/login'); 
         }

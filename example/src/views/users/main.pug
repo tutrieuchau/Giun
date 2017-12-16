@@ -1,0 +1,138 @@
+doctype html
+html(lang='en')
+  head
+    meta(charset='utf-8')
+    meta(name='viewport', content='width=device-width, initial-scale=1')
+    meta(name='description', content='')
+    meta(name='author', content='')
+    link(rel='icon', type='image/png', sizes='16x16', href='../menu/plugins/images/favicon.png')
+    title PikerFree
+    // Bootstrap Core CSS
+    link(href='../menu/bootstrap/dist/css/bootstrap.min.css', rel='stylesheet')
+    // Menu CSS
+    link(href='../menu/plugins/bower_components/sidebar-nav/dist/sidebar-nav.min.css', rel='stylesheet')
+    // toast CSS
+    link(href='../menu/plugins/bower_components/toast-master/css/jquery.toast.css', rel='stylesheet')
+    // morris CSS
+    link(href='../menu/plugins/bower_components/morrisjs/morris.css', rel='stylesheet')
+    // chartist CSS
+    link(href='../menu/plugins/bower_components/chartist-js/dist/chartist.min.css', rel='stylesheet')
+    link(href='../menu/plugins/bower_components/chartist-plugin-tooltip-master/dist/chartist-plugin-tooltip.css', rel='stylesheet')
+    // animation CSS
+    link(href='../menu/css/animate.css', rel='stylesheet')
+    // Custom CSS
+    link(href='../menu/css/style.css', rel='stylesheet')
+    // color CSS
+    link#theme(href='../menu/css/colors/default.css', rel='stylesheet')
+    block css
+  body.fix-header
+    // ==============================================================
+    // Preloader
+    // ==============================================================
+    .preloader
+      svg.circular(viewbox='25 25 50 50')
+        circle.path(cx='50', cy='50', r='20', fill='none', stroke-width='2', stroke-miterlimit='10')
+    // ==============================================================
+    // Wrapper
+    // ==============================================================
+    #wrapper
+      // ==============================================================
+      // Topbar header - style you can find in pages.scss
+      // ==============================================================
+      nav.navbar.navbar-default.navbar-static-top.m-b-0
+        .navbar-header
+          .top-left-part
+            // Logo
+            a.logo(href='/dashboard')
+              // Logo icon image, you can use font-icon also
+              b
+                // This is dark logo icon
+                img.dark-logo(src='../menu/plugins/images/admin-logo.png', alt='home')
+                // This is light logo icon
+                img.light-logo(src='../menu/plugins/images/admin-logo-dark.png', alt='home')
+              // Logo text image you can use text also
+              span.hidden-xs
+                // This is dark logo text
+                img.dark-logo(src='../menu/plugins/images/admin-text.png', alt='home')
+                // This is light logo text
+                img.light-logo(src='../menu/plugins/images/admin-text-dark.png', alt='home')
+          // /Logo
+          ul.nav.navbar-top-links.navbar-right.pull-right
+            li
+              form.app-search.hidden-sm.hidden-xs.m-r-10(role='search')
+                input.form-control(type='text', placeholder='Search...')
+                a(href='')
+                  i.fa.fa-search
+            li
+              a.profile-pic(href='/logout')
+                img.img-circle(src='../menu/plugins/images/users/admin.jpg', alt='user-img', width='36')
+                b.hidden-xs Admin
+        // /.navbar-header
+        // /.navbar-top-links
+        // /.navbar-static-side
+      // End Top Navigation
+      // ==============================================================
+      // Left Sidebar - style you can find in sidebar.scss
+      // ==============================================================
+      .navbar-default.sidebar(role='navigation')
+        .sidebar-nav.slimscrollsidebar
+          .sidebar-head
+            h3
+              span.fa-fw.open-close
+                i.ti-close.ti-menu
+              span.hide-menu Navigation
+          ul#side-menu.nav
+            li(style='padding: 70px 0 0;')
+              a.waves-effect(href='/posts')
+                i.fa.fa-clock-o.fa-fw(aria-hidden='true')
+                | Posts
+            li
+              a.waves-effect(href='/users')
+                i.fa.fa-user.fa-fw(aria-hidden='true')
+                | Users
+            li
+              a.waves-effect(href='/category')
+                i.fa.fa-table.fa-fw(aria-hidden='true')
+                | Category
+            li
+              a.waves-effect(href='/conversation')
+                i.fa.fa-font.fa-fw(aria-hidden='true')
+                | Conversation
+      // ==============================================================
+      // End Left Sidebar
+      // ==============================================================
+      // ==============================================================
+      // Page Content
+      // ==============================================================
+      #page-wrapper
+        .container-fluid
+            block body    
+            footer.footer.text-center  2017 © Copyright Piker
+        // ==============================================================
+        // End Page Content
+        // ==============================================================
+      // ==============================================================
+      // End Wrapper
+      // ==============================================================
+      // ==============================================================
+      // All Jquery
+      // ==============================================================
+      script(src='../menu/plugins/bower_components/jquery/dist/jquery.min.js')
+      // Bootstrap Core JavaScript
+      script(src='../bootstrap/dist/js/bootstrap.min.js')
+      // Menu Plugin JavaScript
+      script(src='../menu/plugins/bower_components/sidebar-nav/dist/sidebar-nav.min.js')
+      script(src='../js/jquery.slimscroll.js')
+      script(src='../js/waves.js')
+      script(src='../menu/plugins/bower_components/waypoints/lib/jquery.waypoints.js')
+      script(src='../menu/plugins/bower_components/counterup/jquery.counterup.min.js')
+      // chartist chart
+      script(src='../menu/plugins/bower_components/chartist-js/dist/chartist.min.js')
+      script(src='../menu/plugins/bower_components/chartist-plugin-tooltip-master/dist/chartist-plugin-tooltip.min.js')
+      // Sparkline chart JavaScript
+      script(src='../menu/plugins/bower_components/jquery-sparkline/jquery.sparkline.min.js')
+      // Custom Theme JavaScript
+      script(src='../menu/js/custom.min.js')
+      script(src='../menu/js/dashboard1.js')
+      script(src='../menu/plugins/bower_components/toast-master/js/jquery.toast.js')
+      block scripts

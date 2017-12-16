@@ -16,7 +16,7 @@ router.get('/',async (req, res) => {
     Object.keys(users).forEach(function(key) {
         userArray.push(users[key]);
     }, this);
-    res.render('user',{users:userArray});
+    res.render('users/user',{users:userArray});
 });
 router.get('/:id',async (req,res) => {
     /** check login */
@@ -28,7 +28,7 @@ router.get('/:id',async (req,res) => {
     let userId = req.params.id;
     if(userId == 'add'){
         let user = {name:'',email:'',slogan:'',address:'',phoneNo:'',avatarLink:'userImages/default_profile.jpg'}
-        res.render('profile',{user:user,type:'add',posts:[]});
+        res.render('users/profile',{user:user,type:'add',posts:[]});
         return;
     }else if(userId.indexOf('deleteUser') > -1){
         firebase.removeUser(userId.replace('deleteUser',''));
@@ -57,12 +57,12 @@ router.get('/:id',async (req,res) => {
     let user = users[userId];
     if(!user){
         user = {name:'',email:'',slogan:'',address:'',phoneNo:'',avatarLink:'userImages/default_profile.jpg'}
-        res.render('profile',{user:user,type:'add',posts:[]});
+        res.render('users/profile',{user:user,type:'add',posts:[]});
     }else{
         if(AVATAR.indexOf(user.avatarLink.replace('userImages/','')) == -1){
             user.avatarLink = 'userImages/default_profile.jpg';
         }
-        res.render('profile',{user:user,type:'edit',posts:userPosts});
+        res.render('users/profile',{user:user,type:'edit',posts:userPosts});
     }
 });
 router.post('/',async (req, res) => {

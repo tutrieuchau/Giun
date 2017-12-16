@@ -28,7 +28,7 @@ block body
                                         a(href='posts/detail/'+ post.postId) #{post.title}
                                     td= post.category
                                     td
-                                        a(href='users/detail/'+ post.ownerId) #{post.author}
+                                        a(href='users/'+ post.ownerId) #{post.author}
                                     td= post.shortContent
                                     td= post.date
 block scripts

@@ -1,0 +1,139 @@
+.form-title {
+  padding-left: 5px;
+  padding-right: 5px;
+  font-size: 13px;
+  text-align: left !important;
+}
+.form-inp {
+  padding-right: 0;
+}
+.form-inp2 {
+  padding-right: 3px;
+}
+.form-required {
+  padding-right: 0;
+  color: red;
+  text-align: left;
+  vertical-align: middle;
+  line-height: 25px;
+}
+.form-required2 {
+  padding-left: 12px;
+}
+.form-group {
+  margin-bottom: 4px;
+}
+.search-container {
+  padding: 10px 0px 5px 0px;
+  background-color: rgb(198, 234, 255);
+  opacity: 0.9;
+}
+.list-container {
+  margin: 30px 0px 30px 0px;
+}
+.logo {
+  padding: 10px;
+}
+.img-logo {
+  height: 80px;
+  width: auto;
+}
+.form-control {
+  padding-left: 4px;
+  font-weight: normal;
+}
+
+.table {
+  margin-bottom: 0px;
+  margin-top: 0px;
+}
+.header-style {
+  padding: 0;
+}
+.table-striped tr {
+  display: block;
+}
+.table-striped thead th,
+.table-striped tbody td {
+  min-width: 150px !important;
+}
+.table-striped tbody th,
+.table-striped thead td {
+  min-width: 25px !important;
+}
+.table-striped tbody {
+  display: block;
+  height: 200px;
+  overflow-y: auto;
+}
+.table-hover tbody tr:hover td,
+.table-hover tbody tr:hover th {
+  background-color: #cdcdcd;
+}
+.form-style {
+  padding: 5px 5px;
+  border: 1px solid transparent;
+  border-radius: 4px;
+  border-color: #ddd;
+  background-color: #c3e1e4;
+}
+.btn-custom {
+  width: 80px;
+  border-radius: 5px !important;
+}
+.nopadding {
+  padding: 0;
+}
+.nopadding-left {
+  padding-left: 0;
+}
+.nopadding-right {
+  padding-right: 0;
+}
+.panel-button {
+  padding-top: 15px;
+  padding-left: 10px;
+  padding-right: 35px;
+  padding-bottom: 0px;
+}
+.panel-button2 {
+  padding-top: 15px;
+  padding-left: 10px;
+  padding-right: 15px;
+  padding-bottom: 0px;
+}
+@media (min-width: 768px) {
+  .form-horizontal .control-label {
+    padding-top: 2px !important;
+  }
+}
+.child-label {
+  padding-left: 25px;
+  text-align: left !important;
+  font-size: 13px;
+}
+.child-input {
+  padding-left: 10px;
+}
+.content-edit {
+  background-color: #e5f3c2;
+}
+
+@media (max-width: 768px) {
+  #navBrand {
+    font-size: 20px !important;
+    margin-top: 15px !important;
+  }
+}
+
+@media (max-width: 991px) {
+  .m-l-18 {
+    margin-left: -18px;
+  }
+}
+
+@media (max-width: 768px) {
+  .m-l-18 {
+    margin-left: 0;
+  }
+}

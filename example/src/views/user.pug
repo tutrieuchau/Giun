@@ -25,7 +25,7 @@ block body
                             each user in users
                                 tr(data-expanded='true')
                                     td 
-                                        a(href='/users/profile/'+ user.id) #{user.name}
+                                        a(href='/users/'+ user.id) #{user.name}
                                     td= user.email
                                     td= user.phoneNumber
                                     td= user.address

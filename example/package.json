@@ -9,6 +9,7 @@
     "start": "node server.js"
   },
   "dependencies": {
+    "@google-cloud/storage": "^1.5.1",
     "archiver": "^2.1.0",
     "archiver-promise": "^1.0.0",
     "bluebird": "^3.5.1",

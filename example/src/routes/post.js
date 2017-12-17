@@ -39,6 +39,7 @@ router.get('/:id',async (req,res) => {
     let postId = req.params.id;
     let post = await firebase.getPost(postId);
     let user = await firebase.getUser(post.ownerId);
-    res.render('posts/details',{post:post,user:user,type:'edit'});
+    let postImages = await firebase.getAllPostImage(postId);
+    res.render('posts/details',{post:post,user:user,postImages:postImages,type:'edit'});
 });
 module.exports = router;

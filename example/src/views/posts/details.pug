@@ -44,19 +44,11 @@ block body
                     .col-md-12.col-sm-12.text-center
                         h5 #{user.slogan}
             .white-box
-                h3.box-title MEDIA 
-                .col-md-6.col-sm-12.post-media-wrap
-                    img.post-media(src='/firebase/userImages/default_profile.jpg')
-                    i.fa.fa-times-circle-o.fa-fw.close-media(aria-hidden='true')
-                .col-md-6.col-sm-12.post-media-wrap
-                    img.post-media(src='/firebase/userImages/default_profile.jpg')
-                    i.fa.fa-times-circle-o.fa-fw.close-media(aria-hidden='true')
-                .col-md-6.col-sm-12.post-media-wrap
-                    img.post-media(src='/firebase/userImages/default_profile.jpg')
-                    i.fa.fa-times-circle-o.fa-fw.close-media(aria-hidden='true')
-                .col-md-6.col-sm-12.post-media-wrap
-                    img.post-media(src='/firebase/userImages/default_profile.jpg')
-                    i.fa.fa-times-circle-o.fa-fw.close-media(aria-hidden='true')
+                h3.box-title MEDIA
+                each image in postImages
+                    .col-md-6.col-sm-12.post-media-wrap
+                        img.post-media(src='/firebase/'+image)
+                        i.fa.fa-times-circle-o.fa-fw.close-media(aria-hidden='true')
                 .col-md-12.col-sm-12
                     .form-group
                         .col-md-12

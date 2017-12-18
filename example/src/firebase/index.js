@@ -1,6 +1,6 @@
 var admin = require("firebase-admin");
 const path = require("path");
-var fs = require('fs');
+var fs = require("fs");
 
 var serviceAccount = require("../../serviceAccountKey.json");
 
@@ -51,6 +51,10 @@ const getAllUserPosts = async userId => {
       "value",
       snapshot => {
         let posts = [];
+        if (!snapshot.val()) {
+          resolve(posts);
+          return;
+        }
         snapshot.val().forEach(post => {
           if (post.ownerId == userId) {
             post["shortContent"] = post.description.substring(0, 20) + "...";
@@ -156,26 +160,33 @@ const getUserAvatar = avatarId => {
       .download(options)
       .then(() => {
         console.log("download file:" + avatarId + " complete");
-        resolve();
+        resolve(true);
+      }).catch(error =>{
+        console.log('file not exit');
+        resolve(false);
       });
   });
 };
 
 const getAllPostImage = postId => {
-  let postImgFolder = path.join(__dirname,"../assets/firebase/postImages/",postId);
+  let postImgFolder = path.join(
+    __dirname,
+    "../assets/firebase/postImages/",
+    postId
+  );
   try {
     fs.statSync(postImgFolder);
-  } catch(e) {
+  } catch (e) {
     fs.mkdirSync(postImgFolder);
   }
   return new Promise((resolve, reject) => {
     storage
       .bucket()
       .getFiles()
-      .then( async results => {
+      .then(async results => {
         const allFiles = results[0];
         let returnFiles = [];
-        for(let index = 0; index < allFiles.length;index ++){
+        for (let index = 0; index < allFiles.length; index++) {
           let file = allFiles[index];
           if (
             file.name.includes("postImages/" + postId) &&
@@ -190,7 +201,7 @@ const getAllPostImage = postId => {
       });
   });
 };
-const downloadPostImage = (imageName) => {
+const downloadPostImage = imageName => {
   const options = {
     destination: path.join(__dirname, "../assets/firebase/", imageName)
   };
@@ -204,8 +215,94 @@ const downloadPostImage = (imageName) => {
         resolve();
       });
   });
-}
+};
 
+/** Category */
+const getAllCategoryCount = () => {
+  let categoriesCount = [];
+  return new Promise((resolve, reject) => {
+    db.ref("posts").on(
+      "value",
+      snapshot => {
+        let posts = snapshot.val();
+        if (!posts) {
+          resolve(categoriesCount);
+          return;
+        }
+        posts.forEach(post => {
+          let tempCategory = categoriesCount.find(ob => ob.id == post.category);
+          if (tempCategory) {
+            tempCategory.postCount++;
+          } else {
+            categoriesCount.push({ id: post.category, postCount: 1 });
+          }
+        });
+        resolve(categoriesCount);
+      },
+      err => {
+        reject(err);
+        console.log(err);
+      }
+    );
+  });
+};
+
+const getAllPostsOfCategory = categoryId => {
+  let posts = [];
+  return new Promise((resolve, reject) => {
+    db.ref("posts").on(
+      "value",
+      snapshot => {
+        if (!snapshot.val()) {
+          resolve(posts);
+          return;
+        }
+        snapshot.val().forEach(post => {
+          if (post.category == categoryId) {
+            posts.push(post);
+          }
+        });
+        resolve(posts);
+      },
+      err => {
+        reject(err);
+        console.log(err);
+      }
+    );
+  });
+};
+/** Conversation */
+const getAllConversations = () => {
+  return new Promise((resolve, reject) => {
+    db.ref("conversations").on(
+      "value",
+      snapshot => {
+        resolve(snapshot.val());
+      },
+      err => {
+        reject(err);
+        console.log(err);
+      }
+    );
+  });
+};
+const getConversation = conversationId => {
+  return new Promise((resolve, reject) => {
+    db
+      .ref("conversations")
+      .child(conversationId)
+      .on(
+        "value",
+        snapshot => {
+          resolve(snapshot.val());
+        },
+        err => {
+          reject(err);
+          console.log(err);
+        }
+      );
+  });
+};
 module.exports = {
   getAllUsers,
   getAllUsersImage,
@@ -218,5 +315,9 @@ module.exports = {
   getAllPost,
   getAllPostImage,
   getPost,
-  downloadPostImage
+  downloadPostImage,
+  getAllCategoryCount,
+  getAllPostsOfCategory,
+  getAllConversations,
+  getConversation
 };

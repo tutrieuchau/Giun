@@ -1,0 +1,25 @@
+extends main
+
+block css
+
+block body
+
+    .row.bg-title
+        .col-lg-3.col-md-4.col-sm-4.col-xs-12
+            h4.page-title CATEGORYS
+    .row
+        .col-sm-12
+            .white-box
+                .table-responsive
+                    table#postsTable.table
+                        thead
+                            th Category Name
+                            th Posts
+                        tbody
+                             each category in categories
+                                tr(data-expanded='true')
+                                    td 
+                                        a(href='/category/' + category.id) #{category.name}
+                                    td= category.postCount
+block scripts
+        

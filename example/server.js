@@ -48,7 +48,8 @@ app.use('/dashboard', index.dashboard);
 app.use('/404', index.er404);
 app.use('/posts', index.post);
 app.use('/users', index.user);
-app.use('/profile', index.profile);
+app.use('/category', index.category);
+app.use('/conversation', index.conversation);
 
 app.get('/robots.txt', (req, res) => {
   res.type('text/plain');

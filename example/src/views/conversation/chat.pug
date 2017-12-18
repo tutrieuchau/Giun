@@ -1,0 +1,32 @@
+extends main
+
+block css
+
+block body
+    .row.bg-title
+        .col-lg-3.col-md-4.col-sm-4.col-xs-12
+            h4.page-title Conversation Detail
+    .row
+        .col-sm-12
+            .white-box
+                ul.chat-ul 
+                    each message in conversation.mess
+                        if message.author == conversation.user1.id
+                            li(style='width:100%')
+                                .msj.macro
+                                    .chat-avatar
+                                        img.img-circle(style='width:100%;', src='/firebase/' + conversation.user1.avatarLink)
+                                    .text.text-l
+                                        p #{message.text}
+                                        p
+                                            small #{message.dateTime}
+                        else
+                            li(style='width:100%;')
+                                .msj-rta.macro
+                                    .text.text-r
+                                        p #{message.text}
+                                        p
+                                            small #{message.dateTime}
+                                    .chat-avatar(style='padding:0px 0px 0px 10px !important')
+                                        img.img-circle(style='width:100%;', src='/firebase/' + conversation.user2.avatarLink)
+                    

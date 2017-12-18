@@ -2,14 +2,7 @@ const express = require("express");
 const router = express.Router();
 const firebase = require("../firebase");
 var randomstring = require("randomstring");
-let AVATAR = [
-  "F696gEJCteXys5VY88PAv5la7N33.jpg",
-  "kdFQ8xxaCjeganYpVVUFBUW4FOC3.jpg",
-  "NnwjOc1LhMeVZVuNY1tj9Nod8Lv1.jpg",
-  "pTfN1xcgJzfLgMgs5jX3weaBLuq1.jpg",
-  "wdsGD6HWcIXarvHc6N68f7Mz8hc2.jpg",
-  "yNzfHV6o7qOi9VkDbuid1S0a9Gp1.jpg"
-];
+
 router.get("/", async (req, res) => {
   /** check login */
   if (!req.session || (req.session && !req.session.user)) {
@@ -57,7 +50,10 @@ router.get("/:id", async (req, res) => {
     res.render("404");
     return;
   } else {
-    await firebase.getUserAvatar(user.avatarLink);
+    let result = await firebase.getUserAvatar(user.avatarLink);
+    if(!result){
+      user.avatarLink = "userImages/default_profile.jpg";
+    }
     res.render("users/profile", { user: user, type: "edit", posts: userPosts });
   }
 });

@@ -9,7 +9,7 @@ block body
     .row
         .col-md-8.col-xs-12
             .white-box
-                form.form-horizontal.form-material(method='POST',action='/users')
+                form.form-horizontal.form-material(method='POST',action='/posts')
                     .form-group
                         label.col-md-12 Post Title
                         .col-md-12
@@ -18,41 +18,77 @@ block body
                         .col-md-12
                             label(for='sel1') Category
                             select#sel1.form-control
-                                option 1
-                                option 2
-                                option 3
-                                option 4
+                                option(value="1") ACCESSORIES
+                                option(value="2") BABY AND TOYS
+                                option(value="3") CLOTHS
+                                option(value="4") ELECTRONICS
+                                option(value="5") GROCERIES
+                                option(value="6") HOME AND LIVING
+                                option(value="7") PETS
+                                option(value="8") OTHERS
                     .form-group
                         label.col-md-12 Description
                         .col-md-12
                             textarea.form-control.form-control-line(name='description',rows='10') #{post.description}
+        
                     .form-group
                         .col-sm-12
                             input#actionType.form-control.form-control-line(type='text',name='type',value=type,style='display:none')
-                        
+                    .form-group
+                        .col-sm-4
+                            button#btnAction.btn.btn-success Update Post
+                        .col-sm-4
+                            a.btn.btn-success(href='/posts') Cancel
+                    .form-group
+                        label.col-md-12 Comments
+                        each comment in post.comments
+                            .col-md-12.comment-bg
+                                .col-md-3
+                                    img.comment-avatar.img-circle(src=comment.user.avatarLink, alt='img')
+                                    label
+                                        a(href='/users/'+ comment.user.id,style="margin-left:4px") #{comment.user.name}
+                                .col-md-9(style="margin-top: 8px")
+                                    p=comment.comment
+                     
         .col-md-4.col-xs-12
             .white-box
                 .user-bg
-                    img(width='100%', alt='user', src='/firebase/userImages/default_profile.jpg')
+                    img(width='100%', alt='user', src=user.avatarLink)
                     .overlay-box
                         .user-content
                             a(href='javascript:void(0)')
-                            img.thumb-lg.img-circle(src='/firebase/' + user.avatarLink, alt='img')
+                            img.thumb-lg.img-circle(src=user.avatarLink, alt='img')
                             h4.text-white #{user.name}
                             h5.text-white #{user.email}
                 .user-btm-box
                     .col-md-12.col-sm-12.text-center
                         h5 #{user.slogan}
-            .white-box
+            .white-box.col-md-12
                 h3.box-title MEDIA
-                each image in postImages
-                    .col-md-6.col-sm-12.post-media-wrap
-                        img.post-media(src='/firebase/'+image)
-                        i.fa.fa-times-circle-o.fa-fw.close-media(aria-hidden='true')
                 .col-md-12.col-sm-12
                     .form-group
-                        .col-md-12
-                            input.form-control.form-control-line(type='file',name = 'title')
-                    
-
+                        button#postFileBtn.btn.btn-success(type="button") Add Media
+                        input#postFile(type="file",name="avatarImages",style="display:none",accept="image/*")
+                        p#postDisplay
+                each image in postImages
+                    .col-md-6.col-sm-12.post-media-wrap
+                        img.post-media(src=image)
 block scripts
+    script.
+        $( document ).ready(function() {
+            if($('#actionType').val() == 'add'){
+                document.getElementById('btnAction').innerText = 'Add Post';
+                $("#postBox").hide();
+            }
+            $("#postFileBtn").click(()=>{
+                $("#postFile").click();
+            });
+            $("#postFile").on("change",()=>{
+                var fileName = document.getElementById('postFile').files[0].name;
+                document.getElementById('postDisplay').innerHTML = fileName; 
+            });
+            $(".post-media-wrap").click(()=>{
+                alert($(this));
+                $(this).remove();
+            });
+        });

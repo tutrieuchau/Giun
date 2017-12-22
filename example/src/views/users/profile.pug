@@ -10,11 +10,11 @@ block body
         .col-md-4.col-xs-12
             .white-box
                 .user-bg
-                    img(width='100%', alt='user', src='/firebase/userImages/default_profile.jpg')
+                    img(width='100%', alt='user', src=user.avatarLink)
                     .overlay-box
                         .user-content
                             a(href='javascript:void(0)')
-                            img.thumb-lg.img-circle(src='/firebase/' + user.avatarLink, alt='img')
+                            img.thumb-lg.img-circle(src=user.avatarLink, alt='img')
                             h4.text-white #{user.name}
                             h5.text-white #{user.email}
                 .user-btm-box
@@ -31,7 +31,7 @@ block body
                              each post in posts
                                 tr(data-expanded='true')
                                     td 
-                                        a(href='posts/detail/'+ post.postId) #{post.title}
+                                        a(href='/posts/'+ post.postId) #{post.title}
                                     td= post.shortContent
         .col-md-8.col-xs-12
             .white-box
@@ -59,7 +59,9 @@ block body
                     .form-group
                         label.col-md-12 Avatar
                         .col-md-12
-                            input.form-control.form-control-line(name='file',type='file')
+                            button#avatarFileBtn.btn.btn-success(type="button") Borrow
+                            input#avatarFile(type="file",name="avatarImages",style="display:none",accept="image/*")
+                            label(style="margin-left:5px")#avartarDisplay
                     //hidden field
                     .form-group
                         .col-sm-12
@@ -80,4 +82,11 @@ block scripts
                 document.getElementById('btnAction').innerText = 'Add User';
                 $("#postBox").hide();
             }
+            $("#avatarFileBtn").click(()=>{
+                $("#avatarFile").click();
+            });
+            $("#avatarFile").on("change",()=>{
+                var fileName = document.getElementById('avatarFile').files[0].name;
+                document.getElementById('avartarDisplay').innerHTML = fileName; 
+            });
         });

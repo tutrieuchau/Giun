@@ -2,6 +2,8 @@ const express = require("express");
 const router = express.Router();
 const firebase = require("../firebase");
 var randomstring = require("randomstring");
+var multer  = require('multer');
+var upload = multer();
 
 router.get("/", async (req, res) => {
   /** check login */
@@ -34,7 +36,7 @@ router.get("/:id", async (req, res) => {
       slogan: "",
       address: "",
       phoneNo: "",
-      avatarLink: "userImages/default_profile.jpg"
+      avatarLink: "/firebase/userImages/default_profile.jpg"
     };
     res.render("users/profile", { user: user, type: "add", posts: [] });
     return;
@@ -50,14 +52,11 @@ router.get("/:id", async (req, res) => {
     res.render("404");
     return;
   } else {
-    let result = await firebase.getUserAvatar(user.avatarLink);
-    if(!result){
-      user.avatarLink = "userImages/default_profile.jpg";
-    }
     res.render("users/profile", { user: user, type: "edit", posts: userPosts });
   }
 });
-router.post("/", async (req, res) => {
+//,upload.single('avatar')
+router.post("/",upload.single("avatarImages"),async (req, res,next) => {
   /** check login */
   if (!req.session || (req.session && !req.session.user)) {
     res.redirect("/login");
@@ -65,6 +64,7 @@ router.post("/", async (req, res) => {
   }
   var userId = randomstring.generate(28);
   let user = req.body;
+  let avatars = req.file;
   if (user.type == "add") {
     user.id = userId;
     user["instanceId"] = userId;

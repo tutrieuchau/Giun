@@ -1,6 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const firebase = require("../firebase");
+const CATEGORY = ["ACCESSORIES","BABY AND TOYS","CLOTHS","ELECTRONICS","GROCERIES","HOME AND LIVING","PETS","OTHERS"];
 router.get("/", async (req, res) => {
   let categoriesCount = await firebase.getAllCategoryCount();
   let categories = [
@@ -25,6 +26,7 @@ router.get("/:id", async (req, res) => {
     if(posts){
         for(let index = 0; index < posts.length; index ++){
             let post = posts[index];
+            post.category = CATEGORY[post.category-1];
             let user = await firebase.getUser(post.ownerId);
             post['author'] = user? user.name : 'Admin';
             post['shortContent'] = post.description.substring(0,30) + "...";

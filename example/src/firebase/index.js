@@ -35,8 +35,12 @@ const getUser = async userId => {
       .child(userId)
       .on(
         "value",
-        snapshot => {
-          resolve(snapshot.val());
+        async snapshot => {
+          let user = snapshot.val();
+          if(user){
+            user.avatarLink = await getUserAvatarLink(user.avatarLink);
+          }
+          resolve(user);
         },
         err => {
           reject(err);
@@ -161,11 +165,34 @@ const getUserAvatar = avatarId => {
       .then(() => {
         console.log("download file:" + avatarId + " complete");
         resolve(true);
-      }).catch(error =>{
-        console.log('file not exit');
+      })
+      .catch(error => {
+        console.log("file not exit");
         resolve(false);
       });
   });
+};
+
+const getUserAvatarLink = avatarId => {
+  return new Promise((resolve, reject) => {
+    storage
+      .bucket()
+      .file(avatarId)
+      .getSignedUrl({
+        action: "read",
+        expires: "03-09-2491"
+      })
+      .then(signedUrls => {
+        console.log(signedUrls[0]);
+        resolve(signedUrls[0]);
+      })
+      .catch(error => {
+        reject(error);
+      });
+  });
+};
+const uploadAvatarLink = () => {
+  // store.bucket().fia
 };
 
 const getAllPostImage = postId => {
@@ -201,6 +228,51 @@ const getAllPostImage = postId => {
       });
   });
 };
+
+const getAllPostImageLink = postId => {
+  return new Promise((resolve, reject) => {
+    storage
+      .bucket()
+      .getFiles()
+      .then(async results => {
+        const allFiles = results[0];
+        let returnFiles = [];
+        for (let index = 0; index < allFiles.length; index++) {
+          let file = allFiles[index];
+          if (
+            file.name.includes("postImages/" + postId) &&
+            (file.metadata.contentType == "image/jpeg" ||
+              file.metadata.contentType == "image/png")
+          ) {
+            let fileLink = await getPostFileLink(file.name);
+            returnFiles.push(fileLink);
+          }
+        }
+        resolve(returnFiles);
+      });
+  });
+};
+
+/** Get link file */
+const getPostFileLink = fileName => {
+  return new Promise((resolve, reject) => {
+    storage
+      .bucket()
+      .file(fileName)
+      .getSignedUrl({
+        action: "read",
+        expires: "03-09-2491"
+      })
+      .then(signedUrls => {
+        console.log(signedUrls[0]);
+        resolve(signedUrls[0]);
+      })
+      .catch(error => {
+        reject(error);
+      });
+  });
+};
+
 const downloadPostImage = imageName => {
   const options = {
     destination: path.join(__dirname, "../assets/firebase/", imageName)
@@ -311,9 +383,11 @@ module.exports = {
   updateUser,
   removeUser,
   getUserAvatar,
+  getUserAvatarLink,
   getAllUserPosts,
   getAllPost,
   getAllPostImage,
+  getAllPostImageLink,
   getPost,
   downloadPostImage,
   getAllCategoryCount,

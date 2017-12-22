@@ -7,6 +7,7 @@ const favicon = require('serve-favicon');
 const path = require('path');
 const http = require('http');
 var session = require('client-sessions');
+var multer  = require('multer');
 
 const index = require('./src/routes');
 
@@ -18,6 +19,7 @@ app.use(helmet());
 app.use(logger('dev'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
+// app.use(multer({ dest: './uploads/'}));
 
 /** Sesssion */
 app.use(session({

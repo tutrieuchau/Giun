@@ -155,11 +155,37 @@
 }
 
 /* post page */
+#postsTable tbody > tr > td {
+  white-space: nowrap;
+  padding: 15px 8px;
+}
+
+#postsTable thead > tr > th {
+  border-bottom: 0px;
+  border-bottom: 1px solid #e4e7ea;
+}
+#postsTable thead > tr > th[class*="sort"]:after {
+  content: "" !important;
+}
+.comment-avatar{
+  height: 40px;
+  width: 40px;
+}
+.comment-bg{
+  margin-top:5px;
+  padding: 15px 0px;
+  background-color: whitesmoke;
+}
+
+
 .post-media {
   height: 100px;
   width: 130px;
   border-radius: 5%;
   vertical-align: middle;
+}
+.post-media-wrap:hover{
+  opacity: 0.5;
 }
 .close-media {
   color: white;

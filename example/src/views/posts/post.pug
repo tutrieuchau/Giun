@@ -13,6 +13,7 @@ block body
         .col-sm-12
             .white-box
                 h3.box-title POSTS
+                a.btn.btn-success(href="/posts/add") Add Post
                 .table-responsive
                     table#postsTable.table
                         thead
@@ -41,5 +42,7 @@ block body
                                             i.fa.fa-trash
 block scripts
     script.
-        $('#postTable').DataTable();
+         $('#postsTable').DataTable({
+            "bLengthChange": false
+        });
         

@@ -15,7 +15,7 @@ block body
                             li(style='width:100%')
                                 .msj.macro
                                     .chat-avatar
-                                        img.img-circle(style='width:100%;', src='/firebase/' + conversation.user1.avatarLink)
+                                        img.img-circle(style='height:40px;width:40px', src=conversation.user1.avatarLink)
                                     .text.text-l
                                         p #{message.text}
                                         p
@@ -28,5 +28,5 @@ block body
                                         p
                                             small #{message.dateTime}
                                     .chat-avatar(style='padding:0px 0px 0px 10px !important')
-                                        img.img-circle(style='width:100%;', src='/firebase/' + conversation.user2.avatarLink)
+                                        img.img-circle(style='height:40px;width:40px', src=conversation.user2.avatarLink)
                     

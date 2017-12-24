@@ -82,9 +82,11 @@ router.post("/", upload.single("avatarImages"), (req, res, next) => {
       user["avatarLink"] = "userImages/default_profile.jpg";
     }
     delete user.type;
+    delete user.bkAvatarLink
     firebase.addUser(user);
   } else {
     delete user.type;
+    delete user.bkAvatarLink
     if (avatar) {
       user["avatarLink"] = "userImages/" + avatar.originalname;
       firebase.deleteImage(user.bkAvatarLink);
@@ -95,6 +97,5 @@ router.post("/", upload.single("avatarImages"), (req, res, next) => {
     firebase.updateUser(user);
   }
   res.redirect("/users");
-  console.log("post");
 });
 module.exports = router;

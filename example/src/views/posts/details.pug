@@ -26,6 +26,13 @@ block body
                                 option(value="6") HOME AND LIVING
                                 option(value="7") PETS
                                 option(value="8") OTHERS
+                    if users
+                        .form-group
+                            .col-md-12
+                                label(for='sel1') User
+                                select#sel2.form-control(name="ownerId")
+                                    each u in users
+                                        option(value=u.id) #{u.name}
                     .form-group
                         label.col-md-12 Description
                         .col-md-12

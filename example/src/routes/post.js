@@ -51,9 +51,11 @@ router.get("/:id", async (req, res) => {
       email: "admin@pikerfree.com",
       avatarLink: "/firebase/userImages/default_profile.jpg"
     };
+    let users = await firebase.getAllUsers();
     res.render("posts/details", {
       post: post,
       user: user,
+      users: users,
       postImages: [],
       type: "add"
     });
@@ -111,7 +113,7 @@ router.post(
       post["location"] = {};
       post["status"] = 1;
       post["timePosted"] = new Date().getTime();
-      post["ownerId"] = "admin";
+      // post["ownerId"] = "admin";
       post["requestingUser"] = [];
       /** get last id of posts */
       let posts = await firebase.getAllPost();
@@ -126,15 +128,18 @@ router.post(
       /** remove images */
     }
     if (postImages) {
-        postImages.forEach(image => {
-            firebase.uploadImage(image.path,"postImages/"+post.postId+"/"+image.originalname); 
-        });
+      postImages.forEach(image => {
+        firebase.uploadImage(
+          image.path,
+          "postImages/" + post.postId + "/" + image.originalname
+        );
+      });
     }
-    if(deleteMediaStr != ""){
-        let deleteMedia = deleteMediaStr.substring(1).split(",");
-        deleteMedia.forEach(image =>{
-            firebase.deleteImage(image);
-        });
+    if (deleteMediaStr != "") {
+      let deleteMedia = deleteMediaStr.substring(1).split(",");
+      deleteMedia.forEach(image => {
+        firebase.deleteImage(image);
+      });
     }
     res.redirect("/posts");
   }

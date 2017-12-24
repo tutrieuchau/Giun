@@ -8,7 +8,7 @@ router.post('/',(req,res) => {
     let password = req.body.password;
     if(username === 'admin' && password ==='admin'){
         req.session.user = username;
-        res.redirect('/posts');
+        res.redirect('/dashboard');
     }else{
         res.render('login',{error:'Invalid username or password'});
     }

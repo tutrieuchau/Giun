@@ -2,8 +2,8 @@ const express = require("express");
 const router = express.Router();
 const firebase = require("../firebase");
 var randomstring = require("randomstring");
-var multer  = require('multer');
-var upload = multer();
+const multer = require("multer");
+let upload = multer({ dest: "uploads/" });
 
 router.get("/", async (req, res) => {
   /** check login */
@@ -49,14 +49,14 @@ router.get("/:id", async (req, res) => {
   let user = await firebase.getUser(userId);
   let userPosts = await firebase.getAllUserPosts(userId);
   if (!user) {
-    res.render("404");
+    res.redirect("/404");
     return;
   } else {
     res.render("users/profile", { user: user, type: "edit", posts: userPosts });
   }
 });
 //,upload.single('avatar')
-router.post("/",upload.single("avatarImages"),async (req, res,next) => {
+router.post("/", upload.single("avatarImages"), (req, res, next) => {
   /** check login */
   if (!req.session || (req.session && !req.session.user)) {
     res.redirect("/login");
@@ -64,22 +64,34 @@ router.post("/",upload.single("avatarImages"),async (req, res,next) => {
   }
   var userId = randomstring.generate(28);
   let user = req.body;
-  let avatars = req.file;
+  let avatar = req.file;
   if (user.type == "add") {
     user.id = userId;
     user["instanceId"] = userId;
     user["posts"] = [];
     user["isOnline"] = false;
-    user["avatarLink"] = "userImages/default_profile.jpg";
     user["rating"] = 0;
     user["mess"] = [];
     user["followingUsers"] = [];
     user["ratedUsers"] = [];
     user["posts"] = [];
+    if (avatar) {
+      user["avatarLink"] = "userImages/" + avatar.originalname;
+      firebase.uploadImage(avatar.path, "userImages/" + avatar.originalname);
+    } else {
+      user["avatarLink"] = "userImages/default_profile.jpg";
+    }
     delete user.type;
     firebase.addUser(user);
   } else {
     delete user.type;
+    if (avatar) {
+      user["avatarLink"] = "userImages/" + avatar.originalname;
+      firebase.deleteImage(user.bkAvatarLink);
+      firebase.uploadImage(avatar.path, "userImages/" + avatar.originalname);
+    } else {
+      user["avatarLink"] = user.bkAvatarLink;
+    }
     firebase.updateUser(user);
   }
   res.redirect("/users");

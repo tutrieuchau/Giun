@@ -35,15 +35,15 @@ block body
                                     td= post.shortContent
         .col-md-8.col-xs-12
             .white-box
-                form.form-horizontal.form-material(method='POST',action='/users')
+                form.form-horizontal.form-material(method='POST',action='/users',enctype="multipart/form-data")
                     .form-group
                         label.col-md-12 Full Name
                         .col-md-12
-                            input.form-control.form-control-line(type='text',name = 'name',value = user.name,placeholder='Your Name')
+                            input.form-control.form-control-line(required,type='text',name = 'name',value = user.name,placeholder='Your Name')
                     .form-group
                         label.col-md-12(for='example-email') Email
                         .col-md-12
-                            input#example-email.form-control.form-control-line(type='email',name = 'email',value=user.email placeholder='xxx@admin.com')
+                            input#example-email.form-control.form-control-line(required,type='email',name = 'email',value=user.email placeholder='xxx@admin.com')
                     .form-group
                         label.col-md-12 Address
                         .col-md-12
@@ -66,13 +66,11 @@ block body
                     .form-group
                         .col-sm-12
                             input#actionType.form-control.form-control-line(type='text',name='type',value=type,style='display:none')
-                    
-                    .form-group
-                        .col-sm-12
+                            input#actionType.form-control.form-control-line(type='text',name='bkAvatarLink',value=user.bkAvatarLink,style='display:none')
                             input.form-control.form-control-line(type='text',name='id',value=user.id,style='display:none')
                     .form-group
                         .col-sm-4
-                            button#btnAction.btn.btn-success Update Profile
+                            button#btnAction.btn.btn-success(type="submit") Update Profile
                         .col-sm-4
                             a.btn.btn-success(href='/users') Cancel
 block scripts

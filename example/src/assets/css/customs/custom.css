@@ -199,6 +199,18 @@
 }
 
 /** conversation detail */
+#conversationTable tbody > tr > td {
+  white-space: nowrap;
+  padding: 15px 8px;
+}
+
+#conversationTable thead > tr > th {
+  border-bottom: 0px;
+  border-bottom: 1px solid #e4e7ea;
+}
+#conversationTable thead > tr > th[class*="sort"]:after {
+  content: "" !important;
+}
 .mytext {
   border: 0;
   padding: 10px;

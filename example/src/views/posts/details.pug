@@ -9,15 +9,15 @@ block body
     .row
         .col-md-8.col-xs-12
             .white-box
-                form.form-horizontal.form-material(method='POST',action='/posts')
+                form.form-horizontal.form-material(method='POST',action='/posts',enctype="multipart/form-data")
                     .form-group
                         label.col-md-12 Post Title
                         .col-md-12
-                            input.form-control.form-control-line(type='text',name = 'title',value = post.title,placeholder='Title')
+                            input.form-control.form-control-line(type='text',name = 'title',value = post.title,placeholder='Title',required)
                     .form-group
                         .col-md-12
                             label(for='sel1') Category
-                            select#sel1.form-control
+                            select#sel1.form-control(name="category")
                                 option(value="1") ACCESSORIES
                                 option(value="2") BABY AND TOYS
                                 option(value="3") CLOTHS
@@ -29,11 +29,14 @@ block body
                     .form-group
                         label.col-md-12 Description
                         .col-md-12
-                            textarea.form-control.form-control-line(name='description',rows='10') #{post.description}
+                            textarea.form-control.form-control-line(name='description',rows='10',required) #{post.description}
         
                     .form-group
                         .col-sm-12
                             input#actionType.form-control.form-control-line(type='text',name='type',value=type,style='display:none')
+                            input#actionType.form-control.form-control-line(type='text',name='postId',value=post.postId,style='display:none')
+                            input#postFile.form-control.form-control-line(type="file",name="postImages",style="display:none",accept="image/*",multiple)
+                            input#deleteMedia.form-control.form-control-line(type="text",name="deleteMedia",style="display:none")
                     .form-group
                         .col-sm-4
                             button#btnAction.btn.btn-success Update Post
@@ -67,12 +70,11 @@ block body
                 h3.box-title MEDIA
                 .col-md-12.col-sm-12
                     .form-group
-                        button#postFileBtn.btn.btn-success(type="button") Add Media
-                        input#postFile(type="file",name="avatarImages",style="display:none",accept="image/*")
-                        p#postDisplay
+                        button#postFileBtn.btn.btn-success.col-md-5(type="button") Add Media
+                        p#postDisplay.col-md-6(style ="margin-top:5px")
                 each image in postImages
                     .col-md-6.col-sm-12.post-media-wrap
-                        img.post-media(src=image)
+                        img.post-media(src=image.imageLink,id=image.imageName,title="Click to delete")
 block scripts
     script.
         $( document ).ready(function() {
@@ -84,10 +86,13 @@ block scripts
                 $("#postFile").click();
             });
             $("#postFile").on("change",()=>{
-                var fileName = document.getElementById('postFile').files[0].name;
-                document.getElementById('postDisplay').innerHTML = fileName; 
+                var files = document.getElementById('postFile').files;
+                document.getElementById('postDisplay').innerHTML = "Select " + files.length + " files"; 
             });
-            $(".post-media-wrap").click(()=>{
-                $(this).remove();
+            $(".post-media-wrap").click((element)=>{
+               var elem = document.getElementById(element.target.id);
+               elem.parentNode.removeChild(elem);
+               //deleteMedia
+               $("#deleteMedia").val($("#deleteMedia").val() + ","+element.target.id);       
             });
         });

@@ -37,7 +37,8 @@ const getUser = async userId => {
         "value",
         async snapshot => {
           let user = snapshot.val();
-          if(user){
+          if (user) {
+            user["bkAvatarLink"] = user.avatarLink;
             user.avatarLink = await getUserAvatarLink(user.avatarLink);
           }
           resolve(user);
@@ -88,7 +89,8 @@ const updateUser = user => {
       email: user.email,
       phoneNumber: user.phoneNumber,
       slogan: user.slogan,
-      address: user.address
+      address: user.address,
+      avatarLink: user.avatarLink
     });
 };
 const removeUser = userId => {
@@ -128,6 +130,28 @@ const getPost = postID => {
         }
       );
   });
+};
+const addPost = post => {
+  db
+    .ref("posts")
+    .child(post.postId)
+    .set(post);
+};
+const updatePost = post => {
+  db
+    .ref("posts")
+    .child(post.postId)
+    .update({
+      title: post.title,
+      description: post.description,
+      category: post.category
+    });
+};
+const removePost = postId => {
+  db
+    .ref("posts")
+    .child(postId)
+    .remove();
 };
 /* ****************** */
 /** Firebase Storage */
@@ -191,8 +215,19 @@ const getUserAvatarLink = avatarId => {
       });
   });
 };
-const uploadAvatarLink = () => {
-  // store.bucket().fia
+const uploadImage = (filePath, dest) => {
+  storage
+    .bucket()
+    .upload(filePath, { destination: dest })
+    .then(() => {
+      fs.unlink(filePath);
+    });
+};
+const deleteImage = imageId => {
+  storage
+    .bucket()
+    .file(imageId)
+    .delete();
 };
 
 const getAllPostImage = postId => {
@@ -215,11 +250,7 @@ const getAllPostImage = postId => {
         let returnFiles = [];
         for (let index = 0; index < allFiles.length; index++) {
           let file = allFiles[index];
-          if (
-            file.name.includes("postImages/" + postId) &&
-            (file.metadata.contentType == "image/jpeg" ||
-              file.metadata.contentType == "image/png")
-          ) {
+          if (file.name.includes("postImages/" + postId)) {
             returnFiles.push(file.name);
             await downloadPostImage(file.name);
           }
@@ -236,21 +267,31 @@ const getAllPostImageLink = postId => {
       .getFiles()
       .then(async results => {
         const allFiles = results[0];
-        let returnFiles = [];
+        let returnFiles =[];
         for (let index = 0; index < allFiles.length; index++) {
           let file = allFiles[index];
-          if (
-            file.name.includes("postImages/" + postId) &&
-            (file.metadata.contentType == "image/jpeg" ||
-              file.metadata.contentType == "image/png")
-          ) {
+          if (file.name.includes("postImages/" + postId)) {
             let fileLink = await getPostFileLink(file.name);
-            returnFiles.push(fileLink);
+            returnFiles.push({"imageLink":fileLink,"imageName":file.name})
           }
         }
         resolve(returnFiles);
       });
   });
+};
+const removePostImage = postId => {
+  storage
+    .bucket()
+    .getFiles()
+    .then(async results => {
+      const allFiles = results[0];
+      for (let index = 0; index < allFiles.length; index++) {
+        let file = allFiles[index];
+        if (file.name.includes("postImages/" + postId)) {
+          deleteImage(file.name);
+        }
+      }
+    });
 };
 
 /** Get link file */
@@ -389,9 +430,15 @@ module.exports = {
   getAllPostImage,
   getAllPostImageLink,
   getPost,
+  updatePost,
+  removePost,
+  addPost,
   downloadPostImage,
   getAllCategoryCount,
   getAllPostsOfCategory,
   getAllConversations,
-  getConversation
+  getConversation,
+  deleteImage,
+  uploadImage,
+  removePostImage
 };

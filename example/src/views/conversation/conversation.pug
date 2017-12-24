@@ -11,7 +11,7 @@ block body
         .col-sm-12
             .white-box
                 .table-responsive
-                    table#postsTable.table
+                    table#conversationTable.table
                         thead
                             th Conversation ID
                             th First User
@@ -28,4 +28,9 @@ block body
                                         a(href='/users/' + conversation.user2.id) #{conversation.user2.name}
                                     td= conversation.lastMessId
 block scripts
+    script.
+        $('#conversationTable').DataTable({
+            "bLengthChange": false
+        });
+
         

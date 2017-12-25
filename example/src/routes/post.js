@@ -77,13 +77,18 @@ router.get("/:id", async (req, res) => {
       };
     }
     if (post.comments) {
+      post.comments = post.comments.filter(function(n){ return n != undefined });
       for (let index = 0; index < post.comments.length; index++) {
         let comment = post.comments[index];
-        comment["user"] = await firebase.getUser(comment.idUser);
+        if (comment) {
+          comment["no"] = index;
+          comment["user"] = await firebase.getUser(comment.idUser);
+        }
       }
     } else {
       post["comments"] = [];
     }
+
 
     let postImages = await firebase.getAllPostImageLink(postId);
     res.render("posts/details", {

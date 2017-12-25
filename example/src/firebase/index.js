@@ -144,8 +144,30 @@ const updatePost = post => {
     .update({
       title: post.title,
       description: post.description,
-      category: post.category
+      category: parseInt(post.category)
     });
+  if (post.editComment) {
+    post.editComment.forEach(editComment => {
+      let cmId = editComment.split("::")[0];
+      let comment = editComment.split("::")[1];
+      db
+        .ref("posts")
+        .child(post.postId)
+        .child("comments")
+        .child(parseInt(cmId))
+        .update({ comment: comment });
+    });
+  }
+  if (post.deleteComment) {
+    post.deleteComment.forEach(deleteComment => {
+      db
+        .ref("posts")
+        .child(post.postId)
+        .child("comments")
+        .child(parseInt(deleteComment))
+        .remove();
+    });
+  }
 };
 const removePost = postId => {
   db
@@ -267,12 +289,12 @@ const getAllPostImageLink = postId => {
       .getFiles()
       .then(async results => {
         const allFiles = results[0];
-        let returnFiles =[];
+        let returnFiles = [];
         for (let index = 0; index < allFiles.length; index++) {
           let file = allFiles[index];
           if (file.name.includes("postImages/" + postId)) {
             let fileLink = await getPostFileLink(file.name);
-            returnFiles.push({"imageLink":fileLink,"imageName":file.name})
+            returnFiles.push({ imageLink: fileLink, imageName: file.name });
           }
         }
         resolve(returnFiles);

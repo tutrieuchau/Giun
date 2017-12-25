@@ -85,8 +85,6 @@ router.post("/", upload.single("avatarImages"), (req, res, next) => {
     delete user.bkAvatarLink
     firebase.addUser(user);
   } else {
-    delete user.type;
-    delete user.bkAvatarLink
     if (avatar) {
       user["avatarLink"] = "userImages/" + avatar.originalname;
       firebase.deleteImage(user.bkAvatarLink);
@@ -94,6 +92,8 @@ router.post("/", upload.single("avatarImages"), (req, res, next) => {
     } else {
       user["avatarLink"] = user.bkAvatarLink;
     }
+    delete user.type;
+    delete user.bkAvatarLink
     firebase.updateUser(user);
   }
   res.redirect("/users");

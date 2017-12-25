@@ -39,11 +39,12 @@ block body
                             textarea.form-control.form-control-line(name='description',rows='10',required) #{post.description}
         
                     .form-group
-                        .col-sm-12
+                        #hiddenField.col-sm-12
                             input#actionType.form-control.form-control-line(type='text',name='type',value=type,style='display:none')
                             input#actionType.form-control.form-control-line(type='text',name='postId',value=post.postId,style='display:none')
                             input#postFile.form-control.form-control-line(type="file",name="postImages",style="display:none",accept="image/*",multiple)
                             input#deleteMedia.form-control.form-control-line(type="text",name="deleteMedia",style="display:none")
+                            
                     .form-group
                         .col-sm-4
                             button#btnAction.btn.btn-success Update Post
@@ -52,14 +53,15 @@ block body
                     .form-group
                         label.col-md-12 Comments
                         each comment in post.comments
-                            .col-md-12.comment-bg
+                            .col-md-12.comment-bg(id=comment.no)
                                 .col-md-3
                                     img.comment-avatar.img-circle(src=comment.user.avatarLink, alt='img')
                                     label
                                         a(href='/users/'+ comment.user.id,style="margin-left:4px") #{comment.user.name}
-                                .col-md-9(style="margin-top: 8px")
-                                    p=comment.comment
-                     
+                                .col-md-7(style="margin-top: 8px")
+                                    p(data-editable,title=comment.no)=comment.comment
+                                .col-md-2(style="margin-top: 8px")
+                                    i.fa.fa-close.comment-delete( style="margin-left:10px",title=comment.no)
         .col-md-4.col-xs-12
             .white-box
                 .user-bg
@@ -97,9 +99,33 @@ block scripts
                 document.getElementById('postDisplay').innerHTML = "Select " + files.length + " files"; 
             });
             $(".post-media-wrap").click((element)=>{
-               var elem = document.getElementById(element.target.id);
+               let elem = document.getElementById(element.target.id);
                elem.parentNode.removeChild(elem);
                //deleteMedia
                $("#deleteMedia").val($("#deleteMedia").val() + ","+element.target.id);       
+            });
+            $(".comment-delete").click(element=>{
+                let elem = document.getElementById(element.target.title);
+                elem.style.display = "none";
+                $("#hiddenField").append('<input name="deleteComment[]" style="display:none" value="'+element.target.title+'"/>');
+            });
+            $('body').on('click', '[data-editable]', function(){
+  
+                var $el = $(this);
+                            
+                var $input = $('<input onkeypress="return event.keyCode != 13;" />').val( $el.text() );
+                $el.replaceWith( $input );
+                
+                var save = function(){
+                    var $p = $('<p data-editable title="'+$el.context.title+'"/>').text( $input.val() );
+                    $input.replaceWith( $p );
+                    if($("#edit"+$el.context.title).val()){
+                        document.getElementById("edit"+$el.context.title).val($input.val());
+                    }else{
+                        $("#hiddenField").append('<input style="display:none" id="edit'+$el.context.title+'" type="text" name="editComment[]" value ="'+$el.context.title+"::"+ $input.val() +'"/>');
+                    }
+                };
+                $input.one('blur', save).focus();
+                
             });
         });

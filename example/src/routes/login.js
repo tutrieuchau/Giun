@@ -1,16 +1,28 @@
-const express = require('express');
+const express = require("express");
 const router = express.Router();
-router.get('/', (req, res) => {
-    res.render('login');
+const firebase = require("../firebase");
+router.get("/", (req, res) => {
+  res.render("login");
 });
-router.post('/',(req,res) => {
-    let username = req.body.username;
-    let password = req.body.password;
-    if(username === 'admin' && password ==='admin'){
-        req.session.user = username;
-        res.redirect('/dashboard');
-    }else{
-        res.render('login',{error:'Invalid username or password'});
-    }
+router.post("/", async (req, res) => {
+  let username = req.body.username;
+  let password = req.body.password;
+  let users = await firebase.getAllUsers();
+  let admin = undefined;
+  if (users) {
+    Object.keys(users).forEach(function(key) {
+      let user = users[key];
+      if(user.name ==='admin'){
+          admin = user;
+          return;
+      }
+    }, this);
+  }
+  if (admin && password === "adminpiker") {
+    req.session.user = username;
+    res.redirect("/dashboard");
+  } else {
+    res.render("login", { error: "Invalid username or password" });
+  }
 });
 module.exports = router;

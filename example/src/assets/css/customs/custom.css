@@ -328,3 +328,6 @@ input:focus {
   color: #d4d4d4;
 }
 /** end conversation detail */
+.dropdown-menu{
+  min-width: 50px !important;
+}

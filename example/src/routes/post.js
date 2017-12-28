@@ -29,11 +29,10 @@ router.get("/", async (req, res) => {
     post.category = CATEGORY[post.category - 1];
     post["author"] = authorOb ? authorOb.name : "Admin";
     post["shortContent"] = post.description.substring(0, 30) + "...";
-
     /** Convert timestamp to date */
     let date = new Date(post.timePosted);
     post["date"] =
-      date.getDate() + "/" + date.getMonth() + "/" + date.getFullYear();
+      date.getDate() + "/" + (date.getMonth() + 1) + "/" + date.getFullYear();
     returnPosts.push(post);
   });
   res.render("posts/post", { posts: returnPosts });
@@ -61,6 +60,28 @@ router.get("/:id", async (req, res) => {
     });
     return;
   }
+
+  if (postId.indexOf("add&") > -1) {
+    let userId = postId.substring(4);
+    let user = await firebase.getUser(userId);
+    if (!user) {
+      user = {
+        name: "admin",
+        email: "admin@pikerfree.com",
+        avatarLink: "/firebase/userImages/default_profile.jpg"
+      };
+    }
+    let post = { description: "", comments: [] };
+    res.render("posts/details", {
+      post: post,
+      user: user,
+      users: undefined,
+      postImages: [],
+      type: "add"
+    });
+    return;
+  }
+
   if (postId.indexOf("deletePost") > -1) {
     firebase.removePost(postId.replace("deletePost", ""));
     firebase.removePostImage(postId.replace("deletePost", ""));
@@ -77,7 +98,9 @@ router.get("/:id", async (req, res) => {
       };
     }
     if (post.comments) {
-      post.comments = post.comments.filter(function(n){ return n != undefined });
+      post.comments = post.comments.filter(function(n) {
+        return n != undefined;
+      });
       for (let index = 0; index < post.comments.length; index++) {
         let comment = post.comments[index];
         if (comment) {
@@ -88,7 +111,6 @@ router.get("/:id", async (req, res) => {
     } else {
       post["comments"] = [];
     }
-
 
     let postImages = await firebase.getAllPostImageLink(postId);
     res.render("posts/details", {

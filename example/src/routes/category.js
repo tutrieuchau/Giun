@@ -3,6 +3,11 @@ const router = express.Router();
 const firebase = require("../firebase");
 const CATEGORY = ["ACCESSORIES","BABY AND TOYS","CLOTHS","ELECTRONICS","GROCERIES","HOME AND LIVING","PETS","OTHERS"];
 router.get("/", async (req, res) => {
+   /** check login */
+   if (!req.session || (req.session && !req.session.user)) {
+    res.redirect("/login");
+    return;
+  }
   let categoriesCount = await firebase.getAllCategoryCount();
   let categories = [
     { id: 1, name: "ACCESSORIES" },

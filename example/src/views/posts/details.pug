@@ -18,14 +18,38 @@ block body
                         .col-md-12
                             label(for='sel1') Category
                             select#sel1.form-control(name="category")
-                                option(value="1") ACCESSORIES
-                                option(value="2") BABY AND TOYS
-                                option(value="3") CLOTHS
-                                option(value="4") ELECTRONICS
-                                option(value="5") GROCERIES
-                                option(value="6") HOME AND LIVING
-                                option(value="7") PETS
-                                option(value="8") OTHERS
+                                if post.category == 1
+                                    option(value="1" selected) ACCESSORIES
+                                else
+                                    option(value="1") ACCESSORIES
+                                if post.category == 2
+                                    option(value="2" selected) BABY AND TOYS
+                                else
+                                    option(value="2") BABY AND TOYS
+                                if post.category == 3
+                                    option(value="3" selected) CLOTHS
+                                else
+                                    option(value="3") CLOTHS
+                                if post.category == 4
+                                    option(value="4" selected) ELECTRONICS
+                                else
+                                    option(value="4") ELECTRONICS
+                                if post.category == 5
+                                    option(value="5" selected) GROCERIES
+                                else
+                                    option(value="5") GROCERIES
+                                if post.category == 6
+                                    option(value="6" selected) HOME AND LIVING
+                                else
+                                    option(value="6") HOME AND LIVING
+                                if post.category == 7
+                                    option(value="7" selected) PETS
+                                else
+                                    option(value="7") PETS
+                                if post.category == 8
+                                    option(value="8" selected) OTHERS
+                                else
+                                    option(value="8") OTHERS
                     if users
                         .form-group
                             .col-md-12
@@ -33,6 +57,10 @@ block body
                                 select#sel2.form-control(name="ownerId")
                                     each u in users
                                         option(value=u.id) #{u.name}
+                    else
+                        .form-group
+                            .col-md-12
+                                input.form-control.form-control-line(type="text" name="ownerId",style="display:none",value=user.id)
                     .form-group
                         label.col-md-12 Description
                         .col-md-12
@@ -48,8 +76,12 @@ block body
                     .form-group
                         .col-sm-4
                             button#btnAction.btn.btn-success Update Post
-                        .col-sm-4
-                            a.btn.btn-success(href='/posts') Cancel
+                        if users || type =='edit'
+                            .col-sm-4
+                                a.btn.btn-success(href='/posts') Cancel
+                        else
+                            .col-sm-4
+                                a.btn.btn-success(href='/users/'+user.id) Cancel
                     .form-group
                         label.col-md-12 Comments
                         each comment in post.comments
@@ -60,8 +92,17 @@ block body
                                         a(href='/users/'+ comment.user.id,style="margin-left:4px") #{comment.user.name}
                                 .col-md-7(style="margin-top: 8px")
                                     p(data-editable,title=comment.no)=comment.comment
-                                .col-md-2(style="margin-top: 8px")
-                                    i.fa.fa-close.comment-delete( style="margin-left:10px",title=comment.no)
+                                .col-md-1.dropdown(style="margin-top: 8px")
+                                    i.fa.fa-ellipsis-h.dropdown-toggle( style="margin-left:10px,font-size:20px",title=comment.no,data-toggle="dropdown")
+                                    //- button.btn.btn-success.dropdown-toggle(type="button" data-toggle="dropdown") toggle
+                                    ul.dropdown-menu
+                                        li
+                                            a Edit
+                                        li
+                                            a Delete
+                        .col-md-12(style="margin:15px 0px 15px 0px")
+                            input.form-control.form-control-line(type="text",onkeyup="onPressEnterInComment(this,event)",onkeypress ="return event.keyCode != 13",placeholder="Add a comment")
+
         .col-md-4.col-xs-12
             .white-box
                 .user-bg
@@ -128,4 +169,10 @@ block scripts
                 $input.one('blur', save).focus();
                 
             });
+            
         });
+        function onPressEnterInComment(element,event){
+            if(event.keyCode == 13){
+                 $("#hiddenField").append('<input style="display:none" type="text" name="addComment[]" value ="'+element.vale()+'"/>');
+            }
+        }

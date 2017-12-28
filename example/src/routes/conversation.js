@@ -3,6 +3,11 @@ const router = express.Router();
 const firebase = require("../firebase");
 
 router.get("/", async (req, res) => {
+   /** check login */
+   if (!req.session || (req.session && !req.session.user)) {
+    res.redirect("/login");
+    return;
+  }
   const conversations = await firebase.getAllConversations();
   const users = await firebase.getAllUsers();
   let conversationArray = [];

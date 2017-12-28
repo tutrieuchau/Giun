@@ -22,6 +22,7 @@ block body
                         h5 #{user.slogan}
             #postBox.white-box
                 h3.box-title POSTS
+                a.btn.btn-success(href='/posts/add&'+user.id) Add Post
                 .table-responsive
                     table#postsTable.table
                         thead

@@ -1,22 +1,22 @@
-var admin = require("firebase-admin");
-const path = require("path");
-var fs = require("fs");
+var admin = require('firebase-admin');
+const path = require('path');
+var fs = require('fs');
 
-var serviceAccount = require("../../serviceAccountKey.json");
+var serviceAccount = require('../../serviceAccountKey.json');
 
 admin.initializeApp({
   credential: admin.credential.cert(serviceAccount),
-  databaseURL: "https://pikerfree.firebaseio.com",
-  storageBucket: "pikerfree.appspot.com"
+  databaseURL: 'https://pikerfree.firebaseio.com',
+  storageBucket: 'pikerfree.appspot.com'
 });
 const db = admin.database();
 const storage = admin.storage();
 
 const getAllUsers = async () => {
-  let ref = db.ref("users");
+  let ref = db.ref('users');
   return new Promise((resolve, reject) => {
     ref.on(
-      "value",
+      'value',
       snapshot => {
         resolve(snapshot.val());
       },
@@ -28,17 +28,16 @@ const getAllUsers = async () => {
 };
 /** Get User by Id */
 const getUser = async userId => {
-  let ref = db.ref("users");
   return new Promise((resolve, reject) => {
     db
-      .ref("users")
+      .ref('users')
       .child(userId)
       .on(
-        "value",
+        'value',
         async snapshot => {
           let user = snapshot.val();
           if (user) {
-            user["bkAvatarLink"] = user.avatarLink;
+            user['bkAvatarLink'] = user.avatarLink;
             user.avatarLink = await getUserAvatarLink(user.avatarLink);
           }
           resolve(user);
@@ -52,8 +51,8 @@ const getUser = async userId => {
 /** Get User Post By Id */
 const getAllUserPosts = async userId => {
   return new Promise((resolve, reject) => {
-    db.ref("posts").on(
-      "value",
+    db.ref('posts').on(
+      'value',
       snapshot => {
         let posts = [];
         if (!snapshot.val()) {
@@ -61,8 +60,8 @@ const getAllUserPosts = async userId => {
           return;
         }
         snapshot.val().forEach(post => {
-          if (post.ownerId == userId) {
-            post["shortContent"] = post.description.substring(0, 20) + "...";
+          if (post.ownerId === userId) {
+            post['shortContent'] = post.description.substring(0, 20) + '...';
             posts.push(post);
           }
         });
@@ -76,13 +75,13 @@ const getAllUserPosts = async userId => {
 };
 const addUser = user => {
   db
-    .ref("users")
+    .ref('users')
     .child(user.id)
     .set(user);
 };
 const updateUser = user => {
   db
-    .ref("users")
+    .ref('users')
     .child(user.id)
     .update({
       name: user.name,
@@ -95,15 +94,15 @@ const updateUser = user => {
 };
 const removeUser = userId => {
   db
-    .ref("users")
+    .ref('users')
     .child(userId)
     .remove();
 };
 const getAllPost = () => {
-  let ref = db.ref("posts");
+  let ref = db.ref('posts');
   return new Promise((resolve, reject) => {
     ref.on(
-      "value",
+      'value',
       snapshot => {
         resolve(snapshot.val());
       },
@@ -117,10 +116,10 @@ const getAllPost = () => {
 const getPost = postID => {
   return new Promise((resolve, reject) => {
     db
-      .ref("posts")
+      .ref('posts')
       .child(postID)
       .on(
-        "value",
+        'value',
         snapshot => {
           resolve(snapshot.val());
         },
@@ -133,45 +132,24 @@ const getPost = postID => {
 };
 const addPost = post => {
   db
-    .ref("posts")
+    .ref('posts')
     .child(post.postId)
     .set(post);
 };
 const updatePost = post => {
   db
-    .ref("posts")
+    .ref('posts')
     .child(post.postId)
     .update({
       title: post.title,
       description: post.description,
-      category: parseInt(post.category)
+      category: parseInt(post.category),
+      comments: post.comments
     });
-  if (post.editComment) {
-    post.editComment.forEach(editComment => {
-      let cmId = editComment.split("::")[0];
-      let comment = editComment.split("::")[1];
-      db
-        .ref("posts")
-        .child(post.postId)
-        .child("comments")
-        .child(parseInt(cmId))
-        .update({ comment: comment });
-    });
-  }
-  if (post.deleteComment) {
-    post.deleteComment.forEach(deleteComment => {
-      db
-        .ref("posts")
-        .child(post.postId)
-        .child("comments")
-        .child(parseInt(deleteComment))
-        .remove();
-    });
-  }
 };
 const removePost = postId => {
   db
-    .ref("posts")
+    .ref('posts')
     .child(postId)
     .remove();
 };
@@ -187,9 +165,9 @@ const getAllUsersImage = () => {
         let returnFiles = [];
         allFiles.forEach(file => {
           if (
-            file.name.includes("userImages") &&
-            (file.metadata.contentType == "image/jpeg" ||
-              file.metadata.contentType == "image/png")
+            file.name.includes('userImages') &&
+            (file.metadata.contentType === 'image/jpeg' ||
+              file.metadata.contentType === 'image/png')
           ) {
             returnFiles.push(file);
           }
@@ -201,7 +179,7 @@ const getAllUsersImage = () => {
 
 const getUserAvatar = avatarId => {
   const options = {
-    destination: path.join(__dirname, "../assets/firebase/", avatarId)
+    destination: path.join(__dirname, '../assets/firebase/', avatarId)
   };
   return new Promise((resolve, reject) => {
     storage
@@ -209,11 +187,11 @@ const getUserAvatar = avatarId => {
       .file(avatarId)
       .download(options)
       .then(() => {
-        console.log("download file:" + avatarId + " complete");
+        console.log('download file:' + avatarId + ' complete');
         resolve(true);
       })
-      .catch(error => {
-        console.log("file not exit");
+      .catch( error => {
+        console.log('file not exit');
         resolve(false);
       });
   });
@@ -225,8 +203,8 @@ const getUserAvatarLink = avatarId => {
       .bucket()
       .file(avatarId)
       .getSignedUrl({
-        action: "read",
-        expires: "03-09-2491"
+        action: 'read',
+        expires: '03-09-2491'
       })
       .then(signedUrls => {
         console.log(signedUrls[0]);
@@ -255,7 +233,7 @@ const deleteImage = imageId => {
 const getAllPostImage = postId => {
   let postImgFolder = path.join(
     __dirname,
-    "../assets/firebase/postImages/",
+    '../assets/firebase/postImages/',
     postId
   );
   try {
@@ -272,7 +250,7 @@ const getAllPostImage = postId => {
         let returnFiles = [];
         for (let index = 0; index < allFiles.length; index++) {
           let file = allFiles[index];
-          if (file.name.includes("postImages/" + postId)) {
+          if (file.name.includes('postImages/' + postId)) {
             returnFiles.push(file.name);
             await downloadPostImage(file.name);
           }
@@ -292,7 +270,7 @@ const getAllPostImageLink = postId => {
         let returnFiles = [];
         for (let index = 0; index < allFiles.length; index++) {
           let file = allFiles[index];
-          if (file.name.includes("postImages/" + postId)) {
+          if (file.name.includes('postImages/' + postId)) {
             let fileLink = await getPostFileLink(file.name);
             returnFiles.push({ imageLink: fileLink, imageName: file.name });
           }
@@ -309,7 +287,7 @@ const removePostImage = postId => {
       const allFiles = results[0];
       for (let index = 0; index < allFiles.length; index++) {
         let file = allFiles[index];
-        if (file.name.includes("postImages/" + postId)) {
+        if (file.name.includes('postImages/' + postId)) {
           deleteImage(file.name);
         }
       }
@@ -323,8 +301,8 @@ const getPostFileLink = fileName => {
       .bucket()
       .file(fileName)
       .getSignedUrl({
-        action: "read",
-        expires: "03-09-2491"
+        action: 'read',
+        expires: '03-09-2491'
       })
       .then(signedUrls => {
         console.log(signedUrls[0]);
@@ -338,7 +316,7 @@ const getPostFileLink = fileName => {
 
 const downloadPostImage = imageName => {
   const options = {
-    destination: path.join(__dirname, "../assets/firebase/", imageName)
+    destination: path.join(__dirname, '../assets/firebase/', imageName)
   };
   return new Promise((resolve, reject) => {
     storage
@@ -346,7 +324,7 @@ const downloadPostImage = imageName => {
       .file(imageName)
       .download(options)
       .then(() => {
-        console.log("download file:" + imageName + " complete");
+        console.log('download file:' + imageName + ' complete');
         resolve();
       });
   });
@@ -356,8 +334,8 @@ const downloadPostImage = imageName => {
 const getAllCategoryCount = () => {
   let categoriesCount = [];
   return new Promise((resolve, reject) => {
-    db.ref("posts").on(
-      "value",
+    db.ref('posts').on(
+      'value',
       snapshot => {
         let posts = snapshot.val();
         if (!posts) {
@@ -365,7 +343,7 @@ const getAllCategoryCount = () => {
           return;
         }
         posts.forEach(post => {
-          let tempCategory = categoriesCount.find(ob => ob.id == post.category);
+          let tempCategory = categoriesCount.find(ob => ob.id === post.category);
           if (tempCategory) {
             tempCategory.postCount++;
           } else {
@@ -385,15 +363,15 @@ const getAllCategoryCount = () => {
 const getAllPostsOfCategory = categoryId => {
   let posts = [];
   return new Promise((resolve, reject) => {
-    db.ref("posts").on(
-      "value",
+    db.ref('posts').on(
+      'value',
       snapshot => {
         if (!snapshot.val()) {
           resolve(posts);
           return;
         }
         snapshot.val().forEach(post => {
-          if (post.category == categoryId) {
+          if (post.category === categoryId) {
             posts.push(post);
           }
         });
@@ -409,8 +387,8 @@ const getAllPostsOfCategory = categoryId => {
 /** Conversation */
 const getAllConversations = () => {
   return new Promise((resolve, reject) => {
-    db.ref("conversations").on(
-      "value",
+    db.ref('conversations').on(
+      'value',
       snapshot => {
         resolve(snapshot.val());
       },
@@ -424,10 +402,10 @@ const getAllConversations = () => {
 const getConversation = conversationId => {
   return new Promise((resolve, reject) => {
     db
-      .ref("conversations")
+      .ref('conversations')
       .child(conversationId)
       .on(
-        "value",
+        'value',
         snapshot => {
           resolve(snapshot.val());
         },

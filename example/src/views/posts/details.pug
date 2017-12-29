@@ -72,7 +72,8 @@ block body
                             input#actionType.form-control.form-control-line(type='text',name='postId',value=post.postId,style='display:none')
                             input#postFile.form-control.form-control-line(type="file",name="postImages",style="display:none",accept="image/*",multiple)
                             input#deleteMedia.form-control.form-control-line(type="text",name="deleteMedia",style="display:none")
-                            
+                            each comment in post.comments
+                                input(type="text",name="comments[]",style="display:none" value=comment.no+"[$]"+comment.comment,data-comment-hidden=comment.no)
                     .form-group
                         .col-sm-4
                             button#btnAction.btn.btn-success Update Post
@@ -82,25 +83,25 @@ block body
                         else
                             .col-sm-4
                                 a.btn.btn-success(href='/users/'+user.id) Cancel
-                    .form-group
+                    #commentBox.form-group
                         label.col-md-12 Comments
                         each comment in post.comments
-                            .col-md-12.comment-bg(id=comment.no)
+                            .col-md-12.comment-bg(data-comment-box=comment.no)
                                 .col-md-3
                                     img.comment-avatar.img-circle(src=comment.user.avatarLink, alt='img')
                                     label
                                         a(href='/users/'+ comment.user.id,style="margin-left:4px") #{comment.user.name}
                                 .col-md-7(style="margin-top: 8px")
-                                    p(data-editable,title=comment.no)=comment.comment
+                                    p(data-comment-content=comment.no)=comment.comment
                                 .col-md-1.dropdown(style="margin-top: 8px")
-                                    i.fa.fa-ellipsis-h.dropdown-toggle( style="margin-left:10px,font-size:20px",title=comment.no,data-toggle="dropdown")
+                                    i.fa.fa-ellipsis-h.dropdown-toggle( style="margin-left:10px;font-size:20px;color:#858585",title=comment.no,data-toggle="dropdown")
                                     //- button.btn.btn-success.dropdown-toggle(type="button" data-toggle="dropdown") toggle
                                     ul.dropdown-menu
                                         li
-                                            a Edit
+                                            a(data-comment-edit=comment.no) Edit
                                         li
-                                            a Delete
-                        .col-md-12(style="margin:15px 0px 15px 0px")
+                                            a(data-comment-delete=comment.no) Delete
+                        #addComment.col-md-12(style="margin:15px 0px 15px 0px")
                             input.form-control.form-control-line(type="text",onkeyup="onPressEnterInComment(this,event)",onkeypress ="return event.keyCode != 13",placeholder="Add a comment")
 
         .col-md-4.col-xs-12
@@ -145,34 +146,66 @@ block scripts
                //deleteMedia
                $("#deleteMedia").val($("#deleteMedia").val() + ","+element.target.id);       
             });
-            $(".comment-delete").click(element=>{
-                let elem = document.getElementById(element.target.title);
-                elem.style.display = "none";
-                $("#hiddenField").append('<input name="deleteComment[]" style="display:none" value="'+element.target.title+'"/>');
-            });
-            $('body').on('click', '[data-editable]', function(){
-  
-                var $el = $(this);
-                            
-                var $input = $('<input onkeypress="return event.keyCode != 13;" />').val( $el.text() );
+            commentProcess();
+        });
+        function onPressEnterInComment(element,event){
+            if(event.keyCode == 13 && element.value !=""){
+                //-  $("#hiddenField").append('<input style="display:none" type="text" name="addComment[]" value ="'+element.vale()+'"/>');
+                let commentNo = $('[data-comment-box]').length;
+                let comment = '<div class="col-md-12 comment-bg" data-comment-box="'+commentNo+'">'
+                    +'<div class="col-md-3">'
+                        +'<img class = "comment-avatar img-circle" src="/firebase/userImages/default_profile.jpg"/>'
+                        +'<a href="/users/bswvVNb6C5aGxqdot3KudLN6Kgm2" style="margin-left:4px"> Admin</a>'
+                    +'</div>'
+                    +'<div class="col-md-7" style="margin-top: 8px">'
+                        +'<p data-comment-content = "'+commentNo+'">'+element.value+'</p>'
+                    +'</div>'
+                    +'<div class="col-md-1 dropdown" style="margin-top:8px">'
+                        +'<i class="fa fa-ellipsis-h dropdown-toggle" style="margin-left:10px;font-size:20px;color:#858585" data-toggle="dropdown" />'
+                        + '<ul class="dropdown-menu">'
+                            + '<li> <a data-comment-edit="'+commentNo+'">Edit</a> </li>'
+                            + '<li><a data-comment-delete="'+commentNo+'">Delete</a></li>'
+                        + '</ul>'
+                    +'</div>'
+                +'</div>';
+                $("#addComment").before(comment);
+                let input = '<input style="display:none" type="text" name="comments[]" data-comment-hidden-add ="'+commentNo+'" value="'+element.value+'" />';
+                element.value = "";
+                $("#hiddenField").append(input);
+                /**Update script*/
+                commentProcess();
+            }
+        }
+        function commentProcess(){
+             /** On edit comment*/
+            $('[data-comment-edit]').click(event =>{
+                var $el = $('[data-comment-content="'+event.target.attributes[0].nodeValue+'"]');
+                var $input = $('<input class="form-control form-control-line" onkeypress="return event.keyCode != 13;" />').val( $el.text() );
                 $el.replaceWith( $input );
-                
                 var save = function(){
-                    var $p = $('<p data-editable title="'+$el.context.title+'"/>').text( $input.val() );
+                    var $p = $('<p data-comment-content='+event.target.attributes[0].nodeValue+' title="'+$el.context.title+'"/>').text( $input.val() );
                     $input.replaceWith( $p );
-                    if($("#edit"+$el.context.title).val()){
-                        document.getElementById("edit"+$el.context.title).val($input.val());
+                    let element = $('[data-comment-hidden="'+event.target.attributes[0].nodeValue+'"]');
+                    if(element.length != 0){
+                        element[0].value = element[0].value.split("[$]")[0] +"[$]"+ $el.text();
                     }else{
-                        $("#hiddenField").append('<input style="display:none" id="edit'+$el.context.title+'" type="text" name="editComment[]" value ="'+$el.context.title+"::"+ $input.val() +'"/>');
+                        element = $('[data-comment-hidden-add="'+event.target.attributes[0].nodeValue+'"]');
+                        element[0].value = $el.text();
                     }
                 };
                 $input.one('blur', save).focus();
-                
+            }); 
+
+            /** On delete comment*/
+            $('[data-comment-delete]').click(event =>{
+                let elem = $('[data-comment-box="'+event.target.attributes[0].nodeValue+'"]')[0];
+                elem.parentNode.removeChild(elem)
+                 let element = $('[data-comment-hidden="'+event.target.attributes[0].nodeValue+'"]');
+                    if(element.length != 0){
+                        element[0].parentNode.removeChild(element[0])
+                    }else{
+                        element = $('[data-comment-hidden-add="'+event.target.attributes[0].nodeValue+'"]');
+                        element[0].parentNode.removeChild(element[0])
+                    }
             });
-            
-        });
-        function onPressEnterInComment(element,event){
-            if(event.keyCode == 13){
-                 $("#hiddenField").append('<input style="display:none" type="text" name="addComment[]" value ="'+element.vale()+'"/>');
-            }
         }

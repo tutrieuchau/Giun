@@ -18,7 +18,7 @@ router.post("/", async (req, res) => {
       }
     }, this);
   }
-  if (admin && password === "adminpiker") {
+  if (admin && password === "password") {
     req.session.user = username;
     res.redirect("/dashboard");
   } else {

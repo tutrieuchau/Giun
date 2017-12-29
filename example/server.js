@@ -71,6 +71,6 @@ app.use((err, req, res) => {
 });
 
 var server = http.createServer(app);
-server.listen(8888, function () {
+server.listen(8080, function () {
   console.log('Server API running at port 8080');
 });

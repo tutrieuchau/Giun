@@ -173,12 +173,12 @@ router.post(
               }
             }
           });
-          post.comments = comments;
         } else {
           post.comments.forEach(comment => {
             comments.push({idUser: '28rye26zFkfjvx1Djoz1ibKErAE2', comment: comment});
           });
         }
+        post.comments = comments;
       } else {
         post['comments'] = [];
       }

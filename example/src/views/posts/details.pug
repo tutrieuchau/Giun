@@ -117,11 +117,11 @@ block body
                 .user-btm-box
                     .col-md-12.col-sm-12.text-center
                         h5 #{user.slogan}
-            .white-box.col-md-12
-                h3.box-title MEDIA
+            #previewImage.white-box.col-md-12
+                h3.box-title Images
                 .col-md-12.col-sm-12
                     .form-group
-                        button#postFileBtn.btn.btn-success.col-md-5(type="button") Add Media
+                        button#postFileBtn.btn.btn-success.col-md-5(type="button") Add Image
                         p#postDisplay.col-md-6(style ="margin-top:5px")
                 each image in postImages
                     .col-md-6.col-sm-12.post-media-wrap
@@ -136,9 +136,21 @@ block scripts
             $("#postFileBtn").click(()=>{
                 $("#postFile").click();
             });
-            $("#postFile").on("change",()=>{
-                var files = document.getElementById('postFile').files;
-                document.getElementById('postDisplay').innerHTML = "Select " + files.length + " files"; 
+            $("#postFile").on("change",(event)=>{
+                var files = event.target.files;
+                for(let index = 0; index < files.length; index ++){
+                    let file = files[index];
+                    if(file.type.indexOf("image") > -1 ){
+                        var reader=new FileReader();
+                        reader.onload = function (e) {
+                            var previewImage = '<div class ="col-md-6 col-sm-12 post-media-wrap">'
+                            + '<img class="post-media" src="'+e.target.result+'" />'
+                            + '</div>'
+                            $("#previewImage").append(previewImage);
+                        }
+                        reader.readAsDataURL(file);
+                    }
+                }
             });
             $(".post-media-wrap").click((element)=>{
                let elem = document.getElementById(element.target.id);
@@ -182,30 +194,36 @@ block scripts
                 var $el = $('[data-comment-content="'+event.target.attributes[0].nodeValue+'"]');
                 var $input = $('<input class="form-control form-control-line" onkeypress="return event.keyCode != 13;" />').val( $el.text() );
                 $el.replaceWith( $input );
-                var save = function(){
-                    var $p = $('<p data-comment-content='+event.target.attributes[0].nodeValue+' title="'+$el.context.title+'"/>').text( $input.val() );
-                    $input.replaceWith( $p );
-                    let element = $('[data-comment-hidden="'+event.target.attributes[0].nodeValue+'"]');
-                    if(element.length != 0){
-                        element[0].value = element[0].value.split("[$]")[0] +"[$]"+ $el.text();
-                    }else{
-                        element = $('[data-comment-hidden-add="'+event.target.attributes[0].nodeValue+'"]');
-                        element[0].value = $el.text();
+                var save = function(keyUpevent){
+                    if(keyUpevent.keyCode == 13 && $el.text() != ''){
+                        var $p = $('<p data-comment-content='+event.target.attributes[0].nodeValue+' title="'+$el.context.title+'"/>').text( $input.val() );
+                        $input.replaceWith( $p );
+                        let element = $('[data-comment-hidden="'+event.target.attributes[0].nodeValue+'"]');
+                        if(element.length != 0){
+                            let inputHidden= '<input style="display:none" type="text" name="comments[]" data-comment-hidden ="'+event.target.attributes[0].nodeValue+'" value="'+element[0].value.split("[$]")[0] +"[$]"+ $input[0].value+'" />';
+                            element[0].parentNode.removeChild(element[0]);
+                            $("#hiddenField").append(inputHidden);
+
+                        }else{
+                            element = $('[data-comment-hidden-add="'+event.target.attributes[0].nodeValue+'"]');
+                            let inputHidden= '<input style="display:none" type="text" name="comments[]" data-comment-hidden-add="'+event.target.attributes[0].nodeValue+'" value="'+$input[0].value+'" />';
+                            element[0].parentNode.removeChild(element[0]);
+                            $("#hiddenField").append(inputHidden);
+                        }
                     }
                 };
-                $input.one('blur', save).focus();
-            }); 
-
+                $input.on('keyup', save).focus();
+            });
             /** On delete comment*/
             $('[data-comment-delete]').click(event =>{
                 let elem = $('[data-comment-box="'+event.target.attributes[0].nodeValue+'"]')[0];
                 elem.parentNode.removeChild(elem)
-                 let element = $('[data-comment-hidden="'+event.target.attributes[0].nodeValue+'"]');
-                    if(element.length != 0){
-                        element[0].parentNode.removeChild(element[0])
-                    }else{
-                        element = $('[data-comment-hidden-add="'+event.target.attributes[0].nodeValue+'"]');
-                        element[0].parentNode.removeChild(element[0])
-                    }
+                let element = $('[data-comment-hidden="'+event.target.attributes[0].nodeValue+'"]');
+                if(element.length != 0){
+                    element[0].parentNode.removeChild(element[0])
+                }else{
+                    element = $('[data-comment-hidden-add="'+event.target.attributes[0].nodeValue+'"]');
+                    element[0].parentNode.removeChild(element[0])
+                }
             });
         }

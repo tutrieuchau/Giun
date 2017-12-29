@@ -36,10 +36,16 @@ block body
                                     td 
                                         a(href='/users/'+user.id)
                                             i.fa.fa-pencil
-                                    td
-                                        a(href='/users/deleteUser'+user.id)
-                                            i.fa.fa-trash
-
+                                    td  
+                                        i.fa.fa-trash(data-toggle="modal",data-target="#confirmModal")
+    #confirmModal.modal.fade(tabindex='-1', role='dialog', aria-labelledby='exampleModalLabel', aria-hidden='true')
+        .modal-dialog(role='document')
+            .modal-content
+                .modal-body
+                    | Do you want to delete it?
+            .modal-footer
+                button.btn.btn-secondary(type='button', data-dismiss='modal') No
+                button.btn.btn-primary(type='button') Yes
 block scripts
     script.
         $('#usersTable').DataTable({

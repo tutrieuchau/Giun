@@ -38,6 +38,6 @@ router.get("/", async (req, res) => {
       returnPosts.push(post);
     }
   });
-  res.render("home/home", { posts: returnPosts });
+  res.render("home/home", { posts: returnPosts, admin: req.session.user });
 });
 module.exports = router;

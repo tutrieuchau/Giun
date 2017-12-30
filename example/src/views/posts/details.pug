@@ -72,6 +72,7 @@ block body
                             input#actionType.form-control.form-control-line(type='text',name='postId',value=post.postId,style='display:none')
                             input#postFile.form-control.form-control-line(type="file",name="postImages",style="display:none",accept="image/*",multiple)
                             input#deleteMedia.form-control.form-control-line(type="text",name="deleteMedia",style="display:none")
+                            input#location.form-control.form-control-line(type="text",name="location" value=post.location.latitude + "," + post.location.longitude,style="display:none")
                             each comment in post.comments
                                 input(type="text",name="comments[]",style="display:none" value=comment.no+"[$]"+comment.comment,data-comment-hidden=comment.no)
                     .form-group
@@ -104,6 +105,9 @@ block body
                         #addComment.col-md-12(style="margin:15px 0px 15px 0px")
                             input.form-control.form-control-line(type="text",onkeyup="onPressEnterInComment(this,event)",onkeypress ="return event.keyCode != 13",placeholder="Add a comment")
 
+                    .form-group
+                        label.col-md-12 Location
+                        #googleMap(style="width:100%;height:400px;")
         .col-md-4.col-xs-12
             .white-box
                 .user-bg
@@ -128,6 +132,8 @@ block body
                         img.post-media(src=image.imageLink,id=image.imageName,title="Click to delete")
 block scripts
     script.
+        var admin = !{JSON.stringify(admin)}
+        var post = !{JSON.stringify(post)}
         $( document ).ready(function() {
             if($('#actionType').val() == 'add'){
                 document.getElementById('btnAction').innerText = 'Add Post';
@@ -166,8 +172,8 @@ block scripts
                 let commentNo = $('[data-comment-box]').length;
                 let comment = '<div class="col-md-12 comment-bg" data-comment-box="'+commentNo+'">'
                     +'<div class="col-md-3">'
-                        +'<img class = "comment-avatar img-circle" src="/firebase/userImages/default_profile.jpg"/>'
-                        +'<a href="/users/bswvVNb6C5aGxqdot3KudLN6Kgm2" style="margin-left:4px"> Admin</a>'
+                        +'<img class = "comment-avatar img-circle" src='+admin.avatarLink+'/>'
+                        +'<a href="/users/'+admin.id+'" style="margin-left:4px"> Admin</a>'
                     +'</div>'
                     +'<div class="col-md-7" style="margin-top: 8px">'
                         +'<p data-comment-content = "'+commentNo+'">'+element.value+'</p>'
@@ -227,3 +233,82 @@ block scripts
                 }
             });
         }
+        //google map
+        var map;
+        var marker;
+        var infowindow;
+        var service;
+        function googleMap(){
+            let location = new google.maps.LatLng(10.870182, 106.802919);
+            if(post.location){
+                location = new google.maps.LatLng(post.location.latitude,post.location.longitude);
+            }
+            var mapOptions = {center: location, zoom: 17};
+            var mapCanvas = document.getElementById("googleMap");
+            map = new google.maps.Map(mapCanvas, mapOptions);
+            infowindow = new google.maps.InfoWindow();
+            service = new google.maps.places.PlacesService(map);
+            let pyrmont = {lat:location.lat(), lng:location.lng()};
+            service.nearbySearch({
+                location: pyrmont,
+                radius: 100,
+                type: ['store']
+            }, (results, status)=>{
+                if (status === google.maps.places.PlacesServiceStatus.OK){
+                    let place = results[0];
+                    let placeLoc = place.geometry.location;
+                    marker = new google.maps.Marker({
+                        position: location,
+                        map: map
+                    });
+                    infowindow.setContent(place.vicinity);
+                    infowindow.open(map, marker);
+                }else{
+                    marker = new google.maps.Marker({
+                        position: location,
+                        map: map
+                    });
+                    infowindow.setContent(location.lat()+","+location.lng());
+                    infowindow.open(map, marker);
+                }
+            });
+            // add marker
+            map.addListener('click', function(event) {
+                addMarker(event.latLng);
+            });
+        }
+        //
+        function addMarker(location) {
+            let pyrmont = {lat:location.lat(), lng:location.lng()};
+            service.nearbySearch({
+                location: pyrmont,
+                radius: 100,
+                type: ['store']
+            }, (results, status)=>{
+                marker.setMap(null);
+                if (status === google.maps.places.PlacesServiceStatus.OK){
+                    let place = results[0];
+                    let placeLoc = place.geometry.location;
+                    marker = new google.maps.Marker({
+                        position: location,
+                        map: map
+                    });
+                    infowindow.setContent(place.vicinity);
+                    infowindow.open(map, marker);
+                }else{
+                    marker = new google.maps.Marker({
+                        position: location,
+                        map: map
+                    });
+                    infowindow.setContent(location.lat()+","+location.lng());
+                    infowindow.open(map, marker);
+                }
+                let hiddenInputLocation = document.getElementById("location");
+                let inputHidden= '<input style="display:none" id="location" type="text" name="location" value="'+ placeLoc.lat() + "," + placeLoc.lng() +'" />';
+                hiddenInputLocation.parentNode.removeChild(hiddenInputLocation);
+                $("#hiddenField").append(inputHidden);
+            });
+        }
+    //- script(src="https://maps.googleapis.com/maps/api/js?key=AIzaSyASvnkW0G2hWn7G_p-y56PEfgNrvkO_kCE&libraries=places")
+    script(src='https://maps.googleapis.com/maps/api/js?key=AIzaSyASvnkW0G2hWn7G_p-y56PEfgNrvkO_kCE&libraries=places&callback=googleMap')
+    

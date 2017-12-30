@@ -12,18 +12,10 @@ router.get('/', (req, res) => {
 router.post('/', async (req, res) => {
   let username = req.body.username;
   let password = req.body.password;
-  let users = await firebase.getAllUsers();
-  let admin;
-  if (users) {
-    Object.keys(users).forEach( function (key) {
-      let user = users[key];
-      if (user.name == 'admin') {
-        admin = user;
-      }
-    }, this);
-  }
-  if (admin && password === 'password') {
-    req.session.user = username;
+  let admin = await firebase.getUserByUsername('admin');
+  if (username == 'admin' && admin && password == 'password') {
+    admin.avatarLink = await firebase.getUserAvatarLink(admin.avatarLink);
+    req.session.user = admin;
     res.redirect('/dashboard');
   } else {
     res.render('login', { error: 'Invalid username or password' });

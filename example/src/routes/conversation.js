@@ -16,7 +16,7 @@ router.get("/", async (req, res) => {
     conversations[key]["user2"] = users[conversations[key].idUser2];
     conversationArray.push(conversations[key]);
   }, this);
-  res.render("conversation/conversation", { conversations: conversations });
+  res.render("conversation/conversation", { conversations: conversations, admin: req.session.user });
 });
 
 router.get("/:id", async (req, res) => {
@@ -36,6 +36,6 @@ router.get("/:id", async (req, res) => {
     mess.push(message);
   });
   conversation.mess = mess;
-  res.render("conversation/chat", { conversation: conversation});
+  res.render("conversation/chat", { conversation: conversation, admin: req.session.user });
 });
 module.exports = router;

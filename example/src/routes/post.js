@@ -35,7 +35,7 @@ router.get('/', async (req, res) => {
       date.getDate() + '/' + (date.getMonth() + 1) + '/' + date.getFullYear();
     returnPosts.push(post);
   });
-  res.render('posts/post', { posts: returnPosts });
+  res.render('posts/post', { posts: returnPosts, admin: req.session.user });
 });
 router.get('/:id', async (req, res) => {
   if (!req.session || (req.session && !req.session.user)) {
@@ -56,7 +56,8 @@ router.get('/:id', async (req, res) => {
       user: user,
       users: users,
       postImages: [],
-      type: 'add'
+      type: 'add',
+      admin: req.session.user
     });
     return;
   }
@@ -77,7 +78,8 @@ router.get('/:id', async (req, res) => {
       user: user,
       users: undefined,
       postImages: [],
-      type: 'add'
+      type: 'add',
+      admin: req.session.user
     });
     return;
   }
@@ -116,7 +118,8 @@ router.get('/:id', async (req, res) => {
       post: post,
       user: user,
       postImages: postImages,
-      type: 'edit'
+      type: 'edit',
+      admin: req.session.user
     });
   }
 });
@@ -130,6 +133,7 @@ router.post(
       return;
     }
     let post = req.body;
+    post.location = {lagitude: post.location.split(',')[0], longitude: post.location.split(',')[1]}
     let postImages = req.files.postImages;
     let deleteMediaStr = post.deleteMedia;
     delete post.deleteMedia;

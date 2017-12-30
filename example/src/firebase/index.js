@@ -48,6 +48,28 @@ const getUser = async userId => {
       );
   });
 };
+/** search user by username */
+const getUserByUsername = async username => {
+  return new Promise((resolve, reject) => {
+    db.ref('users').on(
+      'value',
+      snapshot => {
+        if (snapshot) {
+          Object.keys(snapshot.val()).forEach( function (key) {
+            let user = snapshot.val()[key];
+            if (user.name == username) {
+              resolve(user);
+              return;
+            }
+          }, this);
+        }
+      },
+      err => {
+        reject(err);
+      }
+    );
+  });
+}
 /** Get User Post By Id */
 const getAllUserPosts = async userId => {
   return new Promise((resolve, reject) => {
@@ -144,7 +166,8 @@ const updatePost = post => {
       title: post.title,
       description: post.description,
       category: parseInt(post.category),
-      comments: post.comments
+      comments: post.comments,
+      location: post.location
     });
 };
 const removePost = postId => {
@@ -176,27 +199,6 @@ const getAllUsersImage = () => {
       });
   });
 };
-
-const getUserAvatar = avatarId => {
-  const options = {
-    destination: path.join(__dirname, '../assets/firebase/', avatarId)
-  };
-  return new Promise((resolve, reject) => {
-    storage
-      .bucket()
-      .file(avatarId)
-      .download(options)
-      .then(() => {
-        console.log('download file:' + avatarId + ' complete');
-        resolve(true);
-      })
-      .catch( error => {
-        console.log('file not exit');
-        resolve(false);
-      });
-  });
-};
-
 const getUserAvatarLink = avatarId => {
   return new Promise((resolve, reject) => {
     storage
@@ -423,7 +425,7 @@ module.exports = {
   addUser,
   updateUser,
   removeUser,
-  getUserAvatar,
+  getUserByUsername,
   getUserAvatarLink,
   getAllUserPosts,
   getAllPost,

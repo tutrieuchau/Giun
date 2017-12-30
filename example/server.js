@@ -11,7 +11,6 @@ var session = require('client-sessions');
 const index = require('./src/routes');
 
 const app = express();
-
 // Middlewares
 app.use(compression());
 app.use(helmet());

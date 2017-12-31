@@ -87,8 +87,8 @@ router.post('/', upload.single('avatarImages'), (req, res, next) => {
     user['ratedUsers'] = [];
     user['posts'] = [];
     if (avatar) {
-      user['avatarLink'] = 'userImages/' + user.id + avatar.mimetype.split('/')[1];
-      firebase.uploadImage(avatar.path, 'userImages/' + user.id + avatar.mimetype.split('/')[1]);
+      user['avatarLink'] = 'userImages/' + user.id +"."+ avatar.mimetype.split('/')[1];
+      firebase.uploadImage(avatar.path, 'userImages/' + user.id +"."+ avatar.mimetype.split('/')[1]);
     } else {
       user['avatarLink'] = 'userImages/default_profile.jpg';
     }
@@ -97,9 +97,9 @@ router.post('/', upload.single('avatarImages'), (req, res, next) => {
     firebase.addUser(user);
   } else {
     if (avatar) {
-      user['avatarLink'] = 'userImages/' + user.id + avatar.mimetype.split('/')[1];
+      user['avatarLink'] = 'userImages/' + user.id +"."+ avatar.mimetype.split('/')[1];
       firebase.deleteImage(user.bkAvatarLink);
-      firebase.uploadImage(avatar.path, 'userImages/' + user.id + avatar.mimetype.split('/')[1]);
+      firebase.uploadImage(avatar.path, 'userImages/' + user.id +"."+ avatar.mimetype.split('/')[1]);
     } else {
       user['avatarLink'] = user.bkAvatarLink;
     }

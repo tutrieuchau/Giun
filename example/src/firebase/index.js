@@ -157,6 +157,7 @@ const addPost = post => {
     .ref('posts')
     .child(post.postId)
     .set(post);
+    updatePostCount(post.postId)
 };
 const updatePost = post => {
   db
@@ -170,6 +171,27 @@ const updatePost = post => {
       location: post.location
     });
 };
+const getPostCount = () => {
+  return new Promise((resolve, reject) => {
+    db
+      .ref('postCount')
+      .on(
+        'value',
+        snapshot => {
+          resolve(snapshot.val());
+        },
+        err => {
+          reject(err);
+          console.log(err);
+        }
+      );
+  });
+}
+const updatePostCount = postCount =>{
+  db
+    .ref('postCount')
+    .set(postCount)
+}
 const removePost = postId => {
   db
     .ref('posts')
@@ -435,6 +457,7 @@ module.exports = {
   updatePost,
   removePost,
   addPost,
+  getPostCount,
   downloadPostImage,
   getAllCategoryCount,
   getAllPostsOfCategory,

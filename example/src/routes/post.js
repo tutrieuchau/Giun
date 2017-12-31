@@ -145,16 +145,16 @@ router.post(
       // post['ownerId'] = 'admin';
       post['requestingUser'] = [];
       /** get last id of posts */
-      let posts = await firebase.getAllPost();
-      if (posts) {
-        post['postId'] = posts[posts.length - 1].postId + 1;
+      let postsCount = await firebase.getPostCount();
+      if (postsCount) {
+        post['postId'] = postsCount + 1;
       } else {
-        post['postId'] = 1;
+        post['postId'] = 0;
       }
       if (post.comments) {
         let comments = [];
         post.comments.forEach(comment => {
-          comments.push({idUser: '28rye26zFkfjvx1Djoz1ibKErAE2', comment: comment});
+          comments.push({idUser: req.session.user.id, comment: comment});
         });
         post.comments = comments;
       }
@@ -167,7 +167,7 @@ router.post(
           post.comments.forEach(comment => {
             let cmId = comment.split('[$]')[0];
             if (isNaN(cmId)) {
-              comments.push({idUser: '28rye26zFkfjvx1Djoz1ibKErAE2', comment: comment});
+              comments.push({idUser: req.session.user.id, comment: comment});
             } else {
               let oldComment = oldPost.comments[parseInt(cmId)];
               if (oldComment) {
@@ -178,7 +178,7 @@ router.post(
           });
         } else {
           post.comments.forEach(comment => {
-            comments.push({idUser: '28rye26zFkfjvx1Djoz1ibKErAE2', comment: comment});
+            comments.push({idUser: req.session.user.id, comment: comment});
           });
         }
         post.comments = comments;

@@ -110,7 +110,8 @@ const updateUser = user => {
       email: user.email,
       phoneNumber: user.phoneNumber,
       address: user.address,
-      avatarLink: user.avatarLink
+      avatarLink: user.avatarLink,
+      rating: user.rating
     });
 };
 const removeUser = userId => {

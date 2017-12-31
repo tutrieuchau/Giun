@@ -72,7 +72,10 @@ block body
                             input#actionType.form-control.form-control-line(type='text',name='postId',value=post.postId,style='display:none')
                             input#postFile.form-control.form-control-line(type="file",name="postImages",style="display:none",accept="image/*",multiple)
                             input#deleteMedia.form-control.form-control-line(type="text",name="deleteMedia",style="display:none")
-                            input#location.form-control.form-control-line(type="text",name="location" value=post.location.latitude + "," + post.location.longitude,style="display:none")
+                            if post.location
+                                input#location.form-control.form-control-line(type="text",name="location" value=post.location.latitude + "," + post.location.longitude,style="display:none")
+                            else 
+                                input#location.form-control.form-control-line(type="text",name="location" value="10.870182,106.802919",style="display:none")
                             each comment in post.comments
                                 input(type="text",name="comments[]",style="display:none" value=comment.no+"[$]"+comment.comment,data-comment-hidden=comment.no)
                     .form-group
@@ -248,29 +251,32 @@ block scripts
             infowindow = new google.maps.InfoWindow();
             service = new google.maps.places.PlacesService(map);
             let pyrmont = {lat:location.lat(), lng:location.lng()};
-            service.nearbySearch({
-                location: pyrmont,
-                radius: 100,
-                type: ['store']
-            }, (results, status)=>{
-                if (status === google.maps.places.PlacesServiceStatus.OK){
-                    let place = results[0];
-                    let placeLoc = place.geometry.location;
-                    marker = new google.maps.Marker({
-                        position: location,
-                        map: map
-                    });
-                    infowindow.setContent(place.vicinity);
-                    infowindow.open(map, marker);
-                }else{
-                    marker = new google.maps.Marker({
-                        position: location,
-                        map: map
-                    });
-                    infowindow.setContent(location.lat()+","+location.lng());
-                    infowindow.open(map, marker);
-                }
-            });
+            if(post.location){
+                service.nearbySearch({
+                    location: pyrmont,
+                    radius: 100,
+                    type: ['store']
+                }, (results, status)=>{
+                    if (status === google.maps.places.PlacesServiceStatus.OK){
+                        let place = results[0];
+                        let placeLoc = place.geometry.location;
+                        marker = new google.maps.Marker({
+                            position: location,
+                            map: map
+                        });
+                        infowindow.setContent(place.vicinity);
+                        infowindow.open(map, marker);
+                    }else{
+                        marker = new google.maps.Marker({
+                            position: location,
+                            map: map
+                        });
+                        infowindow.setContent(location.lat()+","+location.lng());
+                        infowindow.open(map, marker);
+                    }
+                });
+            }
+            
             // add marker
             map.addListener('click', function(event) {
                 addMarker(event.latLng);

@@ -133,14 +133,13 @@ router.post(
       return;
     }
     let post = req.body;
-    post.location = {lagitude: post.location.split(',')[0], longitude: post.location.split(',')[1]}
+    post.location = {latitude: parseFloat(post.location.split(',')[0]), longitude: parseFloat(post.location.split(',')[1])}
     let postImages = req.files.postImages;
     let deleteMediaStr = post.deleteMedia;
     delete post.deleteMedia;
     if (post.type === 'add') {
       delete post.type;
       post['comments'] = [];
-      post['location'] = {};
       post['status'] = 1;
       post['timePosted'] = new Date().getTime();
       // post['ownerId'] = 'admin';

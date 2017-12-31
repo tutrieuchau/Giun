@@ -53,10 +53,11 @@ block body
                         label.col-md-12 Phone No
                         .col-md-12
                             input.form-control.form-control-line(type='text',name='phoneNumber',placeholder='123 456 7890',value=user.phoneNumber)
-                    //- .form-group
-                    //-     label.col-md-12 Slogan
-                    //-     .col-md-12
-                    //-         textarea.form-control.form-control-line(name='slogan',rows='5',value=user.slogan) #{user.slogan}
+                    .form-group
+                        label.col-md-12 Rate
+                        .col-md-12
+                            input#rating(type="number",value=user.rating,name="rating")
+                            
                     .form-group
                         label.col-md-12 Avatar
                         .col-md-12
@@ -88,4 +89,6 @@ block scripts
                 var fileName = document.getElementById('avatarFile').files[0].name;
                 document.getElementById('avartarDisplay').innerHTML = fileName; 
             });
+             $("#rating").rating({size:'md',showClear:false ,showCaption:false,min: 0, max: 5, step: 0.5, stars: 5});
+
         });

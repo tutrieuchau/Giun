@@ -35,7 +35,7 @@ router.get('/:id', async (req, res) => {
     let user = {
       name: '',
       email: '',
-      slogan: '',
+      rating: 0,
       address: '',
       phoneNo: '',
       avatarLink: '/firebase/userImages/default_profile.jpg'
@@ -65,13 +65,13 @@ router.post('/', upload.single('avatarImages'), (req, res, next) => {
   }
   var userId = randomstring.generate(28);
   let user = req.body;
+  user.rating = parseFloat(user.rating);
   let avatar = req.file;
   if (user.type == 'add') {
     user.id = userId;
     user['instanceId'] = userId;
     user['posts'] = [];
     user['isOnline'] = false;
-    user['rating'] = 0;
     user['mess'] = [];
     user['followingUsers'] = [];
     user['ratedUsers'] = [];

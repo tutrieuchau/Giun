@@ -206,6 +206,9 @@
 }
 
 /** conversation detail */
+.chatBox{
+  height: 100px;
+}
 #conversationTable tbody > tr > td {
   white-space: nowrap;
   padding: 15px 8px;

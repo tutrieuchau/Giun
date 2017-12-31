@@ -85,7 +85,7 @@ router.get('/:id', async (req, res) => {
   }
 
   if (postId.indexOf('deletePost') > -1) {
-    firebase.removePost(postId.replace('deletePost', ''));
+    firebase.removePost(parseInt(postId.replace('deletePost', '')));
     firebase.removePostImage(postId.replace('deletePost', ''));
     res.redirect('/posts');
   } else {

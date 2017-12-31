@@ -7,9 +7,9 @@ block body
         .col-lg-3.col-md-4.col-sm-4.col-xs-12
             h4.page-title Conversation Detail
     .row
-        .col-sm-12
-            .white-box
-                ul.chat-ul 
+        .nostyle
+            .white-box(style="height: 650px;overflow:scroll")
+               ul#chatReview.chat-ul 
                     each message in conversation.mess
                         if message.author == conversation.user1.id
                             li(style='width:100%')
@@ -29,4 +29,85 @@ block body
                                             small #{message.dateTime}
                                     .chat-avatar(style='padding:0px 0px 0px 10px !important')
                                         img.img-circle(style='height:40px;width:40px', src=conversation.user2.avatarLink)
+    if  conversation.user1.id == admin.id
+        .row 
+            .nostyle(style="position: fixed;top: 750px;width: 100%;")
+                .chatBox.white-box
+                    .form-group
+                        .col-md-12
+                            input#enterChat.form-control.form-control-line(type="text",onkeypress="pressEnterInChat(event);",style="width:80%",placeholder = "Type a message then enter")
+block scripts
+    script.
+        var admin = !{JSON.stringify(admin)}
+        var conversation = !{JSON.stringify(conversation)}
+        var numberMsg = 1;
+        if(conversation&&conversation.mess){
+            numberMsg = conversation.mess.length;
+        }
+        function pressEnterInChat(event){
+            if(event&&event.keyCode == 13){
+                let date = new Date();
+                let dateTime =  date.getHours() + ':' + date.getMinutes() + ' ' + date.getDate() + '/' + (date.getMonth() + 1);
+                let chatBox = '<li style="width:40%">'
+                    +'<div class ="msj macro">'
+                        + '<div class ="chat-avatar">'
+                            + '<img class = "img-circle" style="height:40px;width:40px" src ="'+admin.avatarLink+'"/>'
+                        + '</div>'
+                        + '<div class ="text text-l">'
+                            + '<p>'+ event.target.value+'</p>'
+                            + '<p><small>'+dateTime+'</small></p>'
+                        + '</div>'
+                    + '</div>'
+                +'<li>';
+                $("#chatReview").append(chatBox);
+                let data = {conversationId:conversation.conversationId,author:admin.id,id:numberMsg + 1,text:event.target.value,time:date.getTime()}
+                pushMessage(data);
+                numberMsg++;
+                event.target.value = '';
+            }
+        }
+        function pushMessage(data){
+             $.ajax({
+                url: '/conversation/push',
+                type: 'post',
+                dataType: 'json',
+                success: function (result) {
                     
+                },
+                data:data
+            });
+        }
+        function getNewMsg(data,cb){
+            $.ajax({
+                url: '/conversation/getmsg',
+                type: 'post',
+                dataType: 'json',
+                success:cb,
+                data:data
+            });
+        }
+        setInterval(()=>{
+            let data = {numberMsg:numberMsg,conversationId:conversation.conversationId};
+            getNewMsg(data,result => {
+                result.msg.forEach(message=> {
+                    let date = new Date(message.time);
+                    let dateTime =  date.getHours() + ':' + date.getMinutes() + ' ' + date.getDate() + '/' + (date.getMonth() + 1);
+                    let chatBox = '<li style="width:40%">'
+                        +'<div class ="msj-rta macro">'
+                            + '<div class ="text text-r">'
+                                + '<p>'+ message.text+'</p>'
+                                + '<p><small>'+dateTime+'</small></p>'
+                            + '</div>'
+                            + '<div class ="chat-avatar" style="padding:0px 0px 0px 10px !important" >'
+                                + '<img class = "img-circle" style="height:40px;width:40px" src ="'+conversation.user2.avatarLink+'"/>'
+                            + '</div>'
+                        + '</div>'
+                    +'<li>';
+                    $("#chatReview").append(chatBox);
+                    numberMsg++;
+                });
+            });
+         }, 5000);
+        
+        
+        

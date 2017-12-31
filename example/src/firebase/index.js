@@ -12,7 +12,7 @@ admin.initializeApp({
 const db = admin.database();
 const storage = admin.storage();
 
-const getAllUsers = async () => {
+const getAllUsers = async() => {
   let ref = db.ref('users');
   return new Promise((resolve, reject) => {
     ref.on(
@@ -55,7 +55,7 @@ const getUserByUsername = async username => {
       'value',
       snapshot => {
         if (snapshot) {
-          Object.keys(snapshot.val()).forEach( function (key) {
+          Object.keys(snapshot.val()).forEach(function (key) {
             let user = snapshot.val()[key];
             if (user.name == username) {
               resolve(user);
@@ -157,7 +157,7 @@ const addPost = post => {
     .ref('posts')
     .child(post.postId)
     .set(post);
-    updatePostCount(post.postId)
+  updatePostCount(post.postId)
 };
 const updatePost = post => {
   db
@@ -187,7 +187,7 @@ const getPostCount = () => {
       );
   });
 }
-const updatePostCount = postCount =>{
+const updatePostCount = postCount => {
   db
     .ref('postCount')
     .set(postCount)
@@ -242,7 +242,9 @@ const getUserAvatarLink = avatarId => {
 const uploadImage = (filePath, dest) => {
   storage
     .bucket()
-    .upload(filePath, { destination: dest })
+    .upload(filePath, {
+      destination: dest
+    })
     .then(() => {
       fs.unlink(filePath);
     });
@@ -296,7 +298,10 @@ const getAllPostImageLink = postId => {
           let file = allFiles[index];
           if (file.name.includes('postImages/' + postId)) {
             let fileLink = await getPostFileLink(file.name);
-            returnFiles.push({ imageLink: fileLink, imageName: file.name });
+            returnFiles.push({
+              imageLink: fileLink,
+              imageName: file.name
+            });
           }
         }
         resolve(returnFiles);
@@ -371,7 +376,10 @@ const getAllCategoryCount = () => {
           if (tempCategory) {
             tempCategory.postCount++;
           } else {
-            categoriesCount.push({ id: post.category, postCount: 1 });
+            categoriesCount.push({
+              id: post.category,
+              postCount: 1
+            });
           }
         });
         resolve(categoriesCount);
@@ -440,6 +448,28 @@ const getConversation = conversationId => {
       );
   });
 };
+const addMsgToConversation = (msg, conversationId) => {
+  db
+    .ref('conversations')
+    .child(conversationId)
+    .child('mess')
+    .child(msg.id)
+    .set(msg);
+  db
+    .ref('conversations')
+    .child(conversationId)
+    .update({
+      lastUser1Mess: msg.id,
+      lastMessId: msg.id,
+      lastMessTime: msg.time
+    });
+}
+const addConversation = conversation => {
+  db
+    .ref('conversations')
+    .child(conversation.conversationId)
+    .set(conversation)
+}
 module.exports = {
   getAllUsers,
   getAllUsersImage,
@@ -463,6 +493,8 @@ module.exports = {
   getAllPostsOfCategory,
   getAllConversations,
   getConversation,
+  addMsgToConversation,
+  addConversation,
   deleteImage,
   uploadImage,
   removePostImage

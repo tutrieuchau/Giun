@@ -11,7 +11,6 @@ router.get('/', async (req, res) => {
     res.redirect('/login');
     return;
   }
-  firebase.getAllUsersImage();
 
   let users = await firebase.getAllUsers();
   /** Convert users object to array */
@@ -32,15 +31,22 @@ router.get('/:id', async (req, res) => {
   /** Add or Delete User */
   let userId = req.params.id;
   if (userId == 'add') {
+    let users = await firebase.getAllUsers();
+    let emailArray = [];
+    Object.keys(users).forEach( function(key) {
+      if (users[key].name !== 'admin'){
+        emailArray.push( users[key].email);
+      }
+    }, this);
     let user = {
       name: '',
       email: '',
       rating: 0,
       address: '',
       phoneNo: '',
-      avatarLink: '/firebase/userImages/default_profile.jpg'
+      avatarLink: '/firebase/userImages/default_profile.jpg',
     };
-    res.render('users/profile', { user: user, type: 'add', posts: [], admin: req.session.user });
+    res.render('users/profile', { user: user, type: 'add', posts: [], admin: req.session.user, emails: emailArray });
     return;
   } else if (userId.indexOf('deleteUser') > -1) {
     firebase.removeUser(userId.replace('deleteUser', ''));
@@ -65,7 +71,11 @@ router.post('/', upload.single('avatarImages'), (req, res, next) => {
   }
   var userId = randomstring.generate(28);
   let user = req.body;
-  user.rating = parseFloat(user.rating);
+  if(user.rating == NaN || user.rating == ""){
+    user.rating = 0;
+  }else{
+    user.rating = parseFloat(user.rating);
+  }
   let avatar = req.file;
   if (user.type == 'add') {
     user.id = userId;

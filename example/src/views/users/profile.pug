@@ -12,12 +12,9 @@ block body
                 .user-bg
                     .overlay-box(style="background:none")
                         .user-content
-                            img.thumb-lg.img-circle(src=user.avatarLink, alt='img')
-                            h4 #{user.name}
-                            h5 #{user.email}
-                .user-btm-box
-                    .col-md-12.col-sm-12.text-center
-                        h5 #{user.slogan}
+                            img#previewAvatar.thumb-lg.img-circle(src=user.avatarLink, alt='img')
+                            h4#previewUsername #{user.name}
+                            h5#previewEmail #{user.email}
             #postBox.white-box
                 h3.box-title POSTS
                 a.btn.btn-success(href='/posts/add&'+user.id) Add Post
@@ -34,15 +31,15 @@ block body
                                     td= post.shortContent
         .col-md-8.col-xs-12
             .white-box
-                form.form-horizontal.form-material(method='POST',action='/users',enctype="multipart/form-data")
+                form.form-horizontal.form-material(method='POST',action='/users',enctype="multipart/form-data",onsubmit="return validateForm()")
                     .form-group
                         label.col-md-12 Username
                         .col-md-12
-                            input#username.form-control.form-control-line(required,type='text',name = 'name',value = user.name,placeholder='Your Name')
+                            input#username.form-control.form-control-line(required,type='text',name = 'name',value = user.name,placeholder='Username',onblur="document.getElementById('previewUsername').innerHTML = $('#username').val()")
                     .form-group
                         label.col-md-12(for='example-email') Email
                         .col-md-12
-                            input#example-email.form-control.form-control-line(required,type='email',name = 'email',value=user.email placeholder='xxx@admin.com')
+                            input#email.form-control.form-control-line(required,type='email',name = 'email',value=user.email placeholder='xxx@admin.com',onblur="document.getElementById('previewEmail').innerHTML = $('#email').val()")
                     .form-group
                         label.col-md-12 Address
                         .col-md-12
@@ -50,7 +47,7 @@ block body
                     .form-group
                         label.col-md-12 Phone No
                         .col-md-12
-                            input.form-control.form-control-line(required,type='phone',name='phoneNumber',placeholder='123 456 7890',value=user.phoneNumber)
+                            input.form-control.form-control-line(required,type='tel',name='phoneNumber',placeholder='123 456 7890',value=user.phoneNumber)
                     .form-group
                         label.col-md-12 Rating
                         .col-md-12
@@ -73,8 +70,16 @@ block body
                             button#btnAction.btn.btn-success(type="submit") Update Profile
                         .col-sm-4
                             a.btn.btn-success(href='/users') Cancel
+    #validateModal.modal.fade(role='dialog')
+        .modal-dialog
+            // Modal content
+            .modal-content
+                .modal-header
+                    button.close(type="button", data-dismiss="modal") &times;
+                    h4.modal-title This email is already registered!
 block scripts
     script.
+        var emails = !{JSON.stringify(emails)}
         $( document ).ready(function() {
             if($('#actionType').val() == 'add'){
                 document.getElementById('btnAction').innerText = 'Add User';
@@ -84,9 +89,30 @@ block scripts
                 $("#avatarFile").click();
             });
             $("#avatarFile").on("change",()=>{
-                var fileName = document.getElementById('avatarFile').files[0].name;
-                document.getElementById('avartarDisplay').innerHTML = fileName; 
+                let file = document.getElementById('avatarFile').files[0];
+                document.getElementById('avartarDisplay').innerHTML = file.name; 
+                if(file.type.indexOf("image") > -1 ){
+                        var reader=new FileReader();
+                        reader.onload = function (e) {
+                             document.getElementById('previewAvatar').src = e.target.result;
+                        }
+                        reader.readAsDataURL(file);
+                    }
+
+
+
             });
-             $("#rating").rating({size:'md',showClear:false ,showCaption:false,min: 0, max: 5, step: 0.5, stars: 5});
+            $("#rating").rating({size:'md',showClear:false ,showCaption:false,min: 0, max: 5, step: 0.5, stars: 5});
+            $("#username").on('onblur',(event)=>{
+                document.getElementById('previewUsername').innerHTML = event.target.value;
+            })
         });
+        function validateForm(){
+            let email = $("#email").val();
+            if (emails.indexOf(email.trim()) > -1){
+                 $("#validateModal").modal();
+                return false;
+            }
+            return true;
+        }
 

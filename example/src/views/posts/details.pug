@@ -259,7 +259,6 @@ block scripts
                 }, (results, status)=>{
                     if (status === google.maps.places.PlacesServiceStatus.OK){
                         let place = results[0];
-                        let placeLoc = place.geometry.location;
                         marker = new google.maps.Marker({
                             position: location,
                             map: map
@@ -293,7 +292,6 @@ block scripts
                 marker.setMap(null);
                 if (status === google.maps.places.PlacesServiceStatus.OK){
                     let place = results[0];
-                    let placeLoc = place.geometry.location;
                     marker = new google.maps.Marker({
                         position: location,
                         map: map
@@ -309,7 +307,7 @@ block scripts
                     infowindow.open(map, marker);
                 }
                 let hiddenInputLocation = document.getElementById("location");
-                let inputHidden= '<input style="display:none" id="location" type="text" name="location" value="'+ placeLoc.lat() + "," + placeLoc.lng() +'" />';
+                let inputHidden= '<input style="display:none" id="location" type="text" name="location" value="'+ location.lat() + "," + location.lng() +'" />';
                 hiddenInputLocation.parentNode.removeChild(hiddenInputLocation);
                 $("#hiddenField").append(inputHidden);
             });

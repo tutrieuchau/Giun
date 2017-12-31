@@ -27,7 +27,7 @@ router.get('/', async (req, res) => {
 });
 router.get('/:id', async (req, res) => {
     let categoryId = req.params.id;
-    let posts = await firebase.getAllPostsOfCategory(categoryId);
+    let posts = await firebase.getAllPostsOfCategory(parseInt(categoryId));
     if(posts){
         for(let index = 0; index < posts.length; index ++){
             let post = posts[index];

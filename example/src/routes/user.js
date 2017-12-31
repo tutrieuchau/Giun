@@ -99,4 +99,12 @@ router.post('/', upload.single('avatarImages'), (req, res, next) => {
   }
   res.redirect('/users');
 });
+router.post('/validate', async (req, res) => {
+  let user = await firebase.getUserByUsername(req.body.username);
+  if (user) {
+    res.json({result: false});
+  } else {
+    res.json({result: true});
+  }
+});
 module.exports = router;

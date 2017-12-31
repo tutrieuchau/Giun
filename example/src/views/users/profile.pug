@@ -36,11 +36,11 @@ block body
                                     td= post.shortContent
         .col-md-8.col-xs-12
             .white-box
-                form.form-horizontal.form-material(method='POST',action='/users',enctype="multipart/form-data")
+                form.form-horizontal.form-material(method='POST',action='/users',enctype="multipart/form-data",onsubmit="return validateForm()")
                     .form-group
-                        label.col-md-12 Full Name
+                        label.col-md-12 Username
                         .col-md-12
-                            input.form-control.form-control-line(required,type='text',name = 'name',value = user.name,placeholder='Your Name')
+                            input#username.form-control.form-control-line(required,type='text',name = 'name',value = user.name,placeholder='Your Name')
                     .form-group
                         label.col-md-12(for='example-email') Email
                         .col-md-12
@@ -54,7 +54,7 @@ block body
                         .col-md-12
                             input.form-control.form-control-line(type='text',name='phoneNumber',placeholder='123 456 7890',value=user.phoneNumber)
                     .form-group
-                        label.col-md-12 Rate
+                        label.col-md-12 Rating
                         .col-md-12
                             input#rating(type="number",value=user.rating,name="rating")
                             
@@ -90,5 +90,19 @@ block scripts
                 document.getElementById('avartarDisplay').innerHTML = fileName; 
             });
              $("#rating").rating({size:'md',showClear:false ,showCaption:false,min: 0, max: 5, step: 0.5, stars: 5});
-
         });
+        function validateForm(){
+            var username = document.getElementById('username').value;
+            $.ajax({
+                url : "/users/validate",
+                type : "post",
+                dataType:'text',
+                data : {
+                        username : username
+                },
+                success : function (result){
+                   alert(result)
+                }
+            });
+        }
+

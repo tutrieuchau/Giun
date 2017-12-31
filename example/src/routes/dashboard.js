@@ -31,7 +31,7 @@ router.get("/", async (req, res) => {
     /** Convert timestamp to date */
     let date = new Date(post.timePosted);
     post["date"] =
-      date.getDate() + "/" + date.getMonth() + "/" + date.getFullYear();
+      date.getDate() + "/" + (date.getMonth() +1) + "/" + date.getFullYear();
     let today = new Date();
     today.setHours(0, 0, 0, 0);
     if (date > today) {

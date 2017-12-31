@@ -28,6 +28,8 @@ html(lang='en')
     link(rel="stylesheet", href="../css/datatables.min.css")
     //custom
     link(rel="stylesheet", href="../css/customs/custom.css")
+    //light box
+    link(rel="stylesheet", href="../menu/plugins/lightbox/css/lightbox.css")
     block css
   body.fix-header
     // ==============================================================
@@ -123,9 +125,12 @@ html(lang='en')
       // ==============================================================
       script(src='../menu/plugins/bower_components/jquery/dist/jquery.min.js')
       // Bootstrap Core JavaScript
-      script(src='../bootstrap/dist/js/bootstrap.min.js')
+      script(src='/js/bootstrap.min.js')
       // Menu Plugin JavaScript
       script(src='../menu/plugins/bower_components/sidebar-nav/dist/sidebar-nav.min.js')
+      //bootstrap
+      script(src='../menu/bootstrap/dist/css/bootstrap.min.js')
+
       script(src='../js/jquery.slimscroll.js')
       script(src='../js/waves.js')
       script(src='../menu/plugins/bower_components/waypoints/lib/jquery.waypoints.js')
@@ -141,4 +146,6 @@ html(lang='en')
       script(src='../menu/plugins/bower_components/toast-master/js/jquery.toast.js')
       //datatable
       script(src='../js/datatables.min.js')
+      // lightbox
+      script(src='../menu/plugins/lightbox/js/lightbox.js')
       block scripts

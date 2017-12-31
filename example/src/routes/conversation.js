@@ -30,7 +30,7 @@ router.get('/:id', async (req, res) => {
   let mess = [];
   conversation.mess.forEach(message => {
     let date = new Date(message.time);
-    message['dateTime'] = date.getHours() + ':' + date.getMinutes() + ' ' + date.getDate() + '/' + date.getMonth();
+    message['dateTime'] = date.getHours() + ':' + date.getMinutes() + ' ' + date.getDate() + '/' + (date.getMonth() + 1);
     mess.push(message);
   });
   conversation.mess = mess;

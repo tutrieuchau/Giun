@@ -168,12 +168,11 @@ block scripts
         });
         function onPressEnterInComment(element,event){
             if(event.keyCode == 13 && element.value !=""){
-                //-  $("#hiddenField").append('<input style="display:none" type="text" name="addComment[]" value ="'+element.vale()+'"/>');
                 let commentNo = $('[data-comment-box]').length;
                 let comment = '<div class="col-md-12 comment-bg" data-comment-box="'+commentNo+'">'
                     +'<div class="col-md-3">'
-                        +'<img class = "comment-avatar img-circle" src='+admin.avatarLink+'/>'
-                        +'<a href="/users/'+admin.id+'" style="margin-left:4px"> Admin</a>'
+                        +'<img class = "comment-avatar img-circle" src="'+admin.avatarLink+'"/>'
+                        +'<a href="/users/'+admin.id+'" style="margin-left:4px;font-weight: 500"> admin</a>'
                     +'</div>'
                     +'<div class="col-md-7" style="margin-top: 8px">'
                         +'<p data-comment-content = "'+commentNo+'">'+element.value+'</p>'

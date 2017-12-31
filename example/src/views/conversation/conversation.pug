@@ -19,14 +19,15 @@ block body
                             th Message
                         tbody
                              each conversation in conversations
-                                tr(data-expanded='true')
-                                    td 
-                                        a(href='/conversation/' + conversation.conversationId) #{conversation.conversationId}
-                                    td
-                                        a(href='/users/' + conversation.user1.id) #{conversation.user1.name}
-                                    td
-                                        a(href='/users/' + conversation.user2.id) #{conversation.user2.name}
-                                    td= conversation.lastMessId
+                                if conversation.user1 && conversation.user2
+                                    tr(data-expanded='true')
+                                        td 
+                                            a(href='/conversation/' + conversation.conversationId) #{conversation.conversationId}
+                                        td
+                                            a(href='/users/' + conversation.user1.id) #{conversation.user1.name}
+                                        td
+                                            a(href='/users/' + conversation.user2.id) #{conversation.user2.name}
+                                        td= conversation.lastMessId
 block scripts
     script.
         $('#conversationTable').DataTable({

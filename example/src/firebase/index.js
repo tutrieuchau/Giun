@@ -109,7 +109,6 @@ const updateUser = user => {
       name: user.name,
       email: user.email,
       phoneNumber: user.phoneNumber,
-      slogan: user.slogan,
       address: user.address,
       avatarLink: user.avatarLink
     });

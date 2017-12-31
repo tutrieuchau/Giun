@@ -16,8 +16,10 @@ router.get('/', async (req, res) => {
   let users = await firebase.getAllUsers();
   /** Convert users object to array */
   let userArray = [];
-  Object.keys(users).forEach(function(key) {
-    userArray.push(users[key]);
+  Object.keys(users).forEach( function(key) {
+    if (users[key].name !== 'admin'){
+      userArray.push( users[key] );
+    }
   }, this);
   res.render('users/user', { users: userArray, admin: req.session.user });
 });
@@ -55,7 +57,6 @@ router.get('/:id', async (req, res) => {
     res.render('users/profile', { user: user, type: 'edit', posts: userPosts, admin: req.session.user });
   }
 });
-//,upload.single('avatar')
 router.post('/', upload.single('avatarImages'), (req, res, next) => {
   /** check login */
   if (!req.session || (req.session && !req.session.user)) {

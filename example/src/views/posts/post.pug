@@ -38,11 +38,22 @@ block body
                                         a(href='/posts/'+post.postId)
                                             i.fa.fa-pencil
                                     td
-                                        a(href='/posts/deletePost'+post.postId)
-                                            i.fa.fa-trash
+                                        i.fa.fa-trash(data-toggle="modal",style="color: red",data-target="#confirmModal",data-delete=post.postId)
+    #confirmModal.modal.fade(role='dialog')
+        .modal-dialog
+            // Modal content
+            .modal-content
+                .modal-header
+                    h4.modal-title Do you want to delete it?
+                .modal-footer
+                    button.btn.btn-default(type='button',style="margin-right: 20px;",data-dismiss='modal') No, I don't
+                    a#deleteButton.btn.btn-danger(href='#') Yes, Do it
 block scripts
     script.
          $('#postsTable').DataTable({
             "bLengthChange": false
+        });
+        $('[data-delete]').click(event=>{
+            document.getElementById("deleteButton").href= '/posts/deletePost'+ event.target.attributes[4].nodeValue;
         });
         

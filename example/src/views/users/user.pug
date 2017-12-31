@@ -37,18 +37,22 @@ block body
                                         a(href='/users/'+user.id)
                                             i.fa.fa-pencil
                                     td  
-                                        i.fa.fa-trash(data-toggle="modal",data-target="#confirmModal")
-    #confirmModal.modal.fade(tabindex='-1', role='dialog', aria-labelledby='exampleModalLabel', aria-hidden='true')
-        .modal-dialog(role='document')
+                                        i.fa.fa-trash(data-toggle="modal",style="color: red",data-target="#confirmModal",data-delete=user.id)
+    #confirmModal.modal.fade(role='dialog')
+        .modal-dialog
+            // Modal content
             .modal-content
-                .modal-body
-                    | Do you want to delete it?
-            .modal-footer
-                button.btn.btn-secondary(type='button', data-dismiss='modal') No
-                button.btn.btn-primary(type='button') Yes
+                .modal-header
+                    h4.modal-title Do you want to delete it?
+                .modal-footer
+                    button.btn.btn-default(type='button',style="margin-right: 20px;",data-dismiss='modal') No, I don't
+                    a#deleteButton.btn.btn-danger(href='#') Yes, Do it
 block scripts
     script.
         $('#usersTable').DataTable({
             "bLengthChange": false
+        });
+        $('[data-delete]').click(event=>{
+            document.getElementById("deleteButton").href= '/users/deleteUser'+ event.target.attributes[4].nodeValue;
         });
         

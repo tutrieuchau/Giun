@@ -197,6 +197,13 @@
 .post-media-wrap {
   margin: 10px 0px;
 }
+.delete-media{
+  position: absolute;
+  left: 13%;
+  top: 5%;
+  color: white;
+  font-size:20px;
+}
 
 /** conversation detail */
 #conversationTable tbody > tr > td {

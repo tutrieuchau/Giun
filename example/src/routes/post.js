@@ -135,7 +135,7 @@ router.post(
     let post = req.body;
     post.location = {latitude: parseFloat(post.location.split(',')[0]), longitude: parseFloat(post.location.split(',')[1])}
     let postImages = req.files.postImages;
-    let deleteMediaStr = post.deleteMedia;
+    let deleteMedia = post.deleteMedia;
     delete post.deleteMedia;
     if (post.type === 'add') {
       delete post.type;
@@ -196,8 +196,7 @@ router.post(
         );
       });
     }
-    if (deleteMediaStr !== '') {
-      let deleteMedia = deleteMediaStr.substring(1).split(',');
+    if (deleteMedia) {
       deleteMedia.forEach(image => {
         firebase.deleteImage(image);
       });

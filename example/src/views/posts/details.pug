@@ -71,7 +71,7 @@ block body
                             input#actionType.form-control.form-control-line(type='text',name='type',value=type,style='display:none')
                             input#actionType.form-control.form-control-line(type='text',name='postId',value=post.postId,style='display:none')
                             input#postFile.form-control.form-control-line(type="file",name="postImages",style="display:none",accept="image/*",multiple)
-                            input#deleteMedia.form-control.form-control-line(type="text",name="deleteMedia",style="display:none")
+                            //- input#deleteMedia.form-control.form-control-line(type="text",name="deleteMedia",style="display:none")
                             if post.location
                                 input#location.form-control.form-control-line(type="text",name="location" value=post.location.latitude + "," + post.location.longitude,style="display:none")
                             else 
@@ -112,18 +112,14 @@ block body
                         label.col-md-12 Location
                         #googleMap(style="width:100%;height:400px;")
         .col-md-4.col-xs-12
-            .white-box
+            .white-box(style="background:none")
                 .user-bg
-                    img(width='100%', alt='user', src=user.avatarLink)
-                    .overlay-box
+                    .overlay-box(style="background:none")
                         .user-content
-                            a(href='javascript:void(0)')
-                            img.thumb-lg.img-circle(src=user.avatarLink, alt='img')
-                            h4.text-white #{user.name}
-                            h5.text-white #{user.email}
-                .user-btm-box
-                    .col-md-12.col-sm-12.text-center
-                        h5 #{user.slogan}
+                            a(href='/users/'+user.id)
+                                img.thumb-lg.img-circle(src=user.avatarLink, alt='img')
+                                h4 #{user.name}
+                                h5 #{user.email}
             #previewImage.white-box.col-md-12
                 h3.box-title Images
                 .col-md-12.col-sm-12
@@ -132,7 +128,10 @@ block body
                         p#postDisplay.col-md-6(style ="margin-top:5px")
                 each image in postImages
                     .col-md-6.col-sm-12.post-media-wrap
-                        img.post-media(src=image.imageLink,id=image.imageName,title="Click to delete")
+                        i.fa.fa-times.delete-media(data-toggle="modal",data-media-delete=image.imageName)
+                        a.post-media(href=image.imageLink,data-lightbox="roadtrip" )
+                            img.post-media(src=image.imageLink,id=image.imageName )
+                        
 block scripts
     script.
         var admin = !{JSON.stringify(admin)}
@@ -148,24 +147,27 @@ block scripts
             $("#postFile").on("change",(event)=>{
                 var files = event.target.files;
                 for(let index = 0; index < files.length; index ++){
-                    let file = files[index];
+                    var file = files[index];
                     if(file.type.indexOf("image") > -1 ){
                         var reader=new FileReader();
                         reader.onload = function (e) {
                             var previewImage = '<div class ="col-md-6 col-sm-12 post-media-wrap">'
+                            +'<a href='+e.target.result+' data-lightbox="roadtrip" >'
                             + '<img class="post-media" src="'+e.target.result+'" />'
                             + '</div>'
+                            +'</a>'
                             $("#previewImage").append(previewImage);
                         }
                         reader.readAsDataURL(file);
                     }
                 }
             });
-            $(".post-media-wrap").click((element)=>{
-               let elem = document.getElementById(element.target.id);
-               elem.parentNode.removeChild(elem);
+            $("[data-media-delete]").click((event)=>{
+               let elem = document.getElementById(event.target.attributes[2].nodeValue);
+               document.getElementById('previewImage').removeChild(elem.parentElement.parentElement);
                //deleteMedia
-               $("#deleteMedia").val($("#deleteMedia").val() + ","+element.target.id);       
+               let input = '<input style="display:none" type="text" name="deleteMedia[]" value="'+event.target.attributes[2].nodeValue+'" />';
+               $('#hiddenField').append(input) 
             });
             commentProcess();
         });

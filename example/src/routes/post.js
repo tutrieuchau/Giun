@@ -107,7 +107,7 @@ router.get('/:id', async (req, res) => {
         }
       }
       post.comments = post.comments.filter((n) => {
-        return n !== undefined;
+        return n !== undefined && n.user !== null;
       });
     } else {
       post['comments'] = [];

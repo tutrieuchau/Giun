@@ -187,6 +187,7 @@ router.post(
         });
         post.comments = comments;
       }
+      post.category = parseInt(post.category);
       firebase.addPost(post);
     } else {
       if (post.comments) {

@@ -11,7 +11,6 @@ admin.initializeApp({
 });
 const db = admin.database();
 const storage = admin.storage();
-
 const getAllUsers = async() => {
   let ref = db.ref('users');
   return new Promise((resolve, reject) => {
@@ -95,19 +94,35 @@ const getAllUserPosts = async userId => {
     );
   });
 };
-const addUser = user => {
+const addUser = async user => {
+  admin.auth().createUser({
+    uid: user.id,
+    email: user.email,
+    password: user.password,
+    displayName: user.name
+  });
   db
     .ref('users')
     .child(user.id)
     .set(user);
 };
 const updateUser = user => {
+  if (user.password != "") {
+    admin.auth().updateUser(user.id, {
+      displayName: user.name,
+      password: user.password
+    });
+  } else {
+    admin.auth().updateUser(user.id, {
+      displayName: user.name
+    });
+  }
+
   db
     .ref('users')
     .child(user.id)
     .update({
       name: user.name,
-      email: user.email,
       phoneNumber: user.phoneNumber,
       address: user.address,
       avatarLink: user.avatarLink,
@@ -115,6 +130,7 @@ const updateUser = user => {
     });
 };
 const removeUser = userId => {
+  admin.auth().deleteUser(userId);
   db
     .ref('users')
     .child(userId)

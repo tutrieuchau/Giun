@@ -3,9 +3,11 @@ const router = express.Router();
 const firebase = require('../firebase');
 var randomstring = require('randomstring');
 const multer = require('multer');
-let upload = multer({ dest: 'uploads/' });
+let upload = multer({
+  dest: 'uploads/'
+});
 
-router.get('/', async (req, res) => {
+router.get('/', async(req, res) => {
   /** check login */
   if (!req.session || (req.session && !req.session.user)) {
     res.redirect('/login');
@@ -15,14 +17,17 @@ router.get('/', async (req, res) => {
   let users = await firebase.getAllUsers();
   /** Convert users object to array */
   let userArray = [];
-  Object.keys(users).forEach( function(key) {
-    if (users[key].name !== 'admin'){
-      userArray.push( users[key] );
+  Object.keys(users).forEach(function (key) {
+    if (users[key].name !== 'admin') {
+      userArray.push(users[key]);
     }
   }, this);
-  res.render('users/user', { users: userArray, admin: req.session.user });
+  res.render('users/user', {
+    users: userArray,
+    admin: req.session.user
+  });
 });
-router.get('/:id', async (req, res) => {
+router.get('/:id', async(req, res) => {
   /** check login */
   if (!req.session || (req.session && !req.session.user)) {
     res.redirect('/login');
@@ -33,9 +38,9 @@ router.get('/:id', async (req, res) => {
   if (userId == 'add') {
     let users = await firebase.getAllUsers();
     let emailArray = [];
-    Object.keys(users).forEach( function(key) {
-      if (users[key].name !== 'admin'){
-        emailArray.push( users[key].email);
+    Object.keys(users).forEach(function (key) {
+      if (users[key].name !== 'admin') {
+        emailArray.push(users[key].email);
       }
     }, this);
     let user = {
@@ -46,7 +51,13 @@ router.get('/:id', async (req, res) => {
       phoneNo: '',
       avatarLink: '/firebase/userImages/default_profile.jpg',
     };
-    res.render('users/profile', { user: user, type: 'add', posts: [], admin: req.session.user, emails: emailArray });
+    res.render('users/profile', {
+      user: user,
+      type: 'add',
+      posts: [],
+      admin: req.session.user,
+      emails: emailArray
+    });
     return;
   } else if (userId.indexOf('deleteUser') > -1) {
     firebase.removeUser(userId.replace('deleteUser', ''));
@@ -60,7 +71,12 @@ router.get('/:id', async (req, res) => {
     res.redirect('/404');
     return;
   } else {
-    res.render('users/profile', { user: user, type: 'edit', posts: userPosts, admin: req.session.user });
+    res.render('users/profile', {
+      user: user,
+      type: 'edit',
+      posts: userPosts,
+      admin: req.session.user
+    });
   }
 });
 router.post('/', upload.single('avatarImages'), (req, res, next) => {
@@ -71,9 +87,9 @@ router.post('/', upload.single('avatarImages'), (req, res, next) => {
   }
   var userId = randomstring.generate(28);
   let user = req.body;
-  if(user.rating == NaN || user.rating == ""){
+  if (user.rating == NaN || user.rating == '') {
     user.rating = 0;
-  }else{
+  } else {
     user.rating = parseFloat(user.rating);
   }
   let avatar = req.file;
@@ -81,14 +97,13 @@ router.post('/', upload.single('avatarImages'), (req, res, next) => {
     user.id = userId;
     user['instanceId'] = userId;
     user['posts'] = [];
-    user['isOnline'] = false;
     user['mess'] = [];
     user['followingUsers'] = [];
     user['ratedUsers'] = [];
     user['posts'] = [];
     if (avatar) {
-      user['avatarLink'] = 'userImages/' + user.id +"."+ avatar.mimetype.split('/')[1];
-      firebase.uploadImage(avatar.path, 'userImages/' + user.id +"."+ avatar.mimetype.split('/')[1]);
+      user['avatarLink'] = 'userImages/' + user.id + '.' + avatar.mimetype.split('/')[1];
+      firebase.uploadImage(avatar.path, 'userImages/' + user.id + '.' + avatar.mimetype.split('/')[1]);
     } else {
       user['avatarLink'] = 'userImages/default_profile.jpg';
     }
@@ -97,9 +112,9 @@ router.post('/', upload.single('avatarImages'), (req, res, next) => {
     firebase.addUser(user);
   } else {
     if (avatar) {
-      user['avatarLink'] = 'userImages/' + user.id +"."+ avatar.mimetype.split('/')[1];
+      user['avatarLink'] = 'userImages/' + user.id + '.' + avatar.mimetype.split('/')[1];
       firebase.deleteImage(user.bkAvatarLink);
-      firebase.uploadImage(avatar.path, 'userImages/' + user.id +"."+ avatar.mimetype.split('/')[1]);
+      firebase.uploadImage(avatar.path, 'userImages/' + user.id + '.' + avatar.mimetype.split('/')[1]);
     } else {
       user['avatarLink'] = user.bkAvatarLink;
     }

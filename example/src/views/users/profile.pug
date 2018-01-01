@@ -67,7 +67,8 @@ block body
                             input.form-control.form-control-line(type='text',name='id',value=user.id,style='display:none')
                     .form-group
                         .col-sm-12
-                            a.btn.btn-success(href='/conversation/add$'+user.id) Chat
+                            if type == 'edit'
+                                a.btn.btn-success(href='/conversation/add$'+user.id) Chat
                             button#btnAction.btn.btn-success(type="submit",style="margin-left:20px") Update Profile
                             a.btn.btn-success(href='/users',style="margin-left:20px") Cancel
     #validateModal.modal.fade(role='dialog')

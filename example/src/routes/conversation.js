@@ -36,7 +36,7 @@ router.get('/:id', async(req, res) => {
     if (!conversation) {
       conversationId = randomstring.generate(58);
       conversation = {
-        conversationId: conversationId,
+        conversationId: req.session.user.id + user2Id,
         idUser1: req.session.user.id,
         idUser2: user2Id,
         lastMessId: 1,
@@ -70,11 +70,13 @@ router.get('/:id', async(req, res) => {
   conversation['user1'] = await firebase.getUser(conversation.idUser1);
   conversation['user2'] = await firebase.getUser(conversation.idUser2);
   let mess = [];
-  conversation.mess.forEach(message => {
-    let date = new Date(message.time);
-    message['dateTime'] = date.getHours() + ':' + date.getMinutes() + ' ' + date.getDate() + '/' + (date.getMonth() + 1);
-    mess.push(message);
-  });
+  if (conversation.mess) {
+    conversation.mess.forEach(message => {
+      let date = new Date(message.time);
+      message['dateTime'] = date.getHours() + ':' + date.getMinutes() + ' ' + date.getDate() + '/' + (date.getMonth() + 1);
+      mess.push(message);
+    });
+  }
   conversation.mess = mess;
   res.render('conversation/chat', {
     conversation: conversation,

@@ -23,6 +23,10 @@ router.get('/', async(req, res) => {
 });
 
 router.get('/:id', async(req, res) => {
+  if (!req.session || (req.session && !req.session.user)) {
+    res.redirect('/login');
+    return;
+  }
   let conversationId = req.params.id;
   let conversation;
   if (conversationId.indexOf('add$') > -1) {

@@ -83,7 +83,10 @@ block body
                             button#btnAction.btn.btn-success Update Post
                         if users || type =='edit'
                             .col-sm-4
-                                a.btn.btn-success(href='/posts') Cancel
+                                if dashboard
+                                    a.btn.btn-success(href='/dashboard') Cancel
+                                else
+                                    a.btn.btn-success(href='/posts') Cancel
                         else
                             .col-sm-4
                                 a.btn.btn-success(href='/users/'+user.id) Cancel

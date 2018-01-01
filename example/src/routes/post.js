@@ -2,7 +2,9 @@ const express = require('express');
 const router = express.Router();
 const firebase = require('../firebase');
 const multer = require('multer');
-let upload = multer({ dest: 'uploads/' });
+let upload = multer({
+  dest: 'uploads/'
+});
 const CATEGORY = [
   'ACCESSORIES',
   'BABY AND TOYS',
@@ -13,7 +15,7 @@ const CATEGORY = [
   'PETS',
   'OTHERS'
 ];
-router.get('/', async (req, res) => {
+router.get('/', async(req, res) => {
   /** check login */
   if (!req.session || (req.session && !req.session.user)) {
     res.redirect('/login');
@@ -35,16 +37,22 @@ router.get('/', async (req, res) => {
       date.getDate() + '/' + (date.getMonth() + 1) + '/' + date.getFullYear();
     returnPosts.push(post);
   });
-  res.render('posts/post', { posts: returnPosts, admin: req.session.user });
+  res.render('posts/post', {
+    posts: returnPosts,
+    admin: req.session.user
+  });
 });
-router.get('/:id', async (req, res) => {
+router.get('/:id', async(req, res) => {
   if (!req.session || (req.session && !req.session.user)) {
     res.redirect('/login');
     return;
   }
   let postId = req.params.id;
   if (postId === 'add') {
-    let post = { description: '', comments: [] };
+    let post = {
+      description: '',
+      comments: []
+    };
     let user = {
       name: 'admin',
       email: 'admin@pikerfree.com',
@@ -72,7 +80,10 @@ router.get('/:id', async (req, res) => {
         avatarLink: '/firebase/userImages/default_profile.jpg'
       };
     }
-    let post = { description: '', comments: [] };
+    let post = {
+      description: '',
+      comments: []
+    };
     res.render('posts/details', {
       post: post,
       user: user,
@@ -87,7 +98,11 @@ router.get('/:id', async (req, res) => {
   if (postId.indexOf('deletePost') > -1) {
     firebase.removePost(parseInt(postId.replace('deletePost', '')));
     firebase.removePostImage(postId.replace('deletePost', ''));
-    res.redirect('/posts');
+    if (req.headers.referer && req.headers.referer.indexOf('dashboard') > -1) {
+      res.redirect('/dashboard');
+    } else {
+      res.redirect('/posts');
+    }
   } else {
     let post = await firebase.getPost(postId);
     let user = await firebase.getUser(post.ownerId);
@@ -112,28 +127,39 @@ router.get('/:id', async (req, res) => {
     } else {
       post['comments'] = [];
     }
-
+    /** check return page */
+    var dashboard = false;
+    if (req.headers.referer && req.headers.referer.indexOf('dashboard') > -1) {
+      dashboard = true;
+    };
     let postImages = await firebase.getAllPostImageLink(postId);
     res.render('posts/details', {
       post: post,
       user: user,
       postImages: postImages,
       type: 'edit',
-      admin: req.session.user
+      admin: req.session.user,
+      dashboard: dashboard
     });
   }
 });
 
 router.post(
   '/',
-  upload.fields([{ name: 'postImages', maxCount: 20 }]),
-  async (req, res) => {
+  upload.fields([{
+    name: 'postImages',
+    maxCount: 20
+  }]),
+  async(req, res) => {
     if (!req.session || (req.session && !req.session.user)) {
       res.redirect('/login');
       return;
     }
     let post = req.body;
-    post.location = {latitude: parseFloat(post.location.split(',')[0]), longitude: parseFloat(post.location.split(',')[1])}
+    post.location = {
+      latitude: parseFloat(post.location.split(',')[0]),
+      longitude: parseFloat(post.location.split(',')[1])
+    }
     let postImages = req.files.postImages;
     let deleteMedia = post.deleteMedia;
     delete post.deleteMedia;
@@ -154,7 +180,10 @@ router.post(
       if (post.comments) {
         let comments = [];
         post.comments.forEach(comment => {
-          comments.push({idUser: req.session.user.id, comment: comment});
+          comments.push({
+            idUser: req.session.user.id,
+            comment: comment
+          });
         });
         post.comments = comments;
       }
@@ -167,7 +196,10 @@ router.post(
           post.comments.forEach(comment => {
             let cmId = comment.split('[$]')[0];
             if (isNaN(cmId)) {
-              comments.push({idUser: req.session.user.id, comment: comment});
+              comments.push({
+                idUser: req.session.user.id,
+                comment: comment
+              });
             } else {
               let oldComment = oldPost.comments[parseInt(cmId)];
               if (oldComment) {
@@ -178,7 +210,10 @@ router.post(
           });
         } else {
           post.comments.forEach(comment => {
-            comments.push({idUser: req.session.user.id, comment: comment});
+            comments.push({
+              idUser: req.session.user.id,
+              comment: comment
+            });
           });
         }
         post.comments = comments;

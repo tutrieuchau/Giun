@@ -21,6 +21,13 @@ router.get('/', async(req, res) => {
   let posts = await firebase.getAllPost();
   let users = await firebase.getAllUsers();
   let returnPosts = [];
+  if (!Array.isArray(posts)) {
+    let tmpPost = [];
+    Object.keys(posts).forEach(function (key) {
+      tmpPost.push(posts[key]);
+    }, this);
+    posts = tmpPost;
+  }
   /** remote undefine object */
   posts.forEach(post => {
     let authorOb = users[post.ownerId];

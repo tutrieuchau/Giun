@@ -75,18 +75,24 @@ const getAllUserPosts = async userId => {
     db.ref('posts').on(
       'value',
       snapshot => {
-        let posts = [];
-        if (!snapshot.val()) {
-          resolve(posts);
-          return;
-        }
-        snapshot.val().forEach(post => {
-          if (post.ownerId == userId) {
-            post['shortContent'] = post.description.substring(0, 20) + '...';
-            posts.push(post);
+        let returnPosts = [];
+        let posts = snapshot.val();
+        if (posts) {
+          if (!Array.isArray(posts)) {
+            let tmpPost = [];
+            Object.keys(posts).forEach(function (key) {
+              tmpPost.push(posts[key]);
+            }, this);
+            posts = tmpPost;
           }
-        });
-        resolve(posts);
+          posts.forEach(post => {
+            if (post.ownerId == userId) {
+              post['shortContent'] = post.description.substring(0, 20) + '...';
+              returnPosts.push(post);
+            }
+          });
+        }
+        resolve(returnPosts);
       },
       err => {
         reject(err);
@@ -171,12 +177,12 @@ const getPost = postID => {
   });
 };
 const addPost = post => {
+  updateUserPost(post.ownerId, post.postId)
   db
     .ref('posts')
     .child(post.postId)
     .set(post);
   updatePostCount(post.postId)
-  updateUserPost(post.ownerId, post.postId)
 };
 const updatePost = post => {
   db
@@ -212,27 +218,34 @@ const updatePostCount = postCount => {
     .set(postCount)
 }
 const updateUserPost = async(userId, postId) => {
-  let post = await getAllUserPosts(userId);
-  let postNum = post ? post.length + 1 : 0;
-  db.ref('users').child(userId).child('posts').child(postNum).set(postId);
+  let user = await getUser(userId);
+  let postCount = 0;
+  if (user && user.posts) {
+    user.posts.push(postId);
+    db.ref('users').child(userId).child('posts').set(user.posts);
+  } else {
+    db.ref('users').child(userId).child('posts').set([postId])
+  }
+
 }
 const removeUserPost = (userId, postId) => {
   db.ref('users').child(userId).child('posts').on('value', snapshot => {
-    if (snapshot) {
-      for (let i = 0; i < snapshot.val().length; i++) {
-        if (snapshot.val()[i] == postId) {
-          db.ref('users').child(userId).child('posts').child(i).remove();
-        }
-      }
+    let posts = snapshot.val();
+    if (posts) {
+      posts = posts.filter(function (item) {
+        return item !== postId
+      })
+      db.ref('users').child(userId).child('posts').set(posts);
     }
   })
 }
 const removePost = (userId, postId) => {
+  removeUserPost(userId, postId);
   db
     .ref('posts')
     .child(postId)
     .remove();
-  removeUserPost(userId, postId);
+
 };
 /* ****************** */
 /** Firebase Storage */
@@ -526,11 +539,25 @@ const getConversationBetween2User = (user1Id, user2Id) => {
       );
   });
 }
-const addConversation = conversation => {
+const addConversation = async conversation => {
   db
     .ref('conversations')
     .child(conversation.conversationId)
     .set(conversation)
+  let user = await getUser(conversation.idUser2);
+  if (user.mess) {
+    user.mess.push(conversation.conversationId);
+    db.ref('users').child(user.id).child('mess').set(user.mess);
+  } else {
+    db.ref('users').child(user.id).child('mess').set([conversation.conversationId]);
+  }
+  user = await getUser(conversation.idUser1);
+  if (user.mess) {
+    user.mess.push(conversation.conversationId);
+    db.ref('users').child(user.id).child('mess').set(user.mess);
+  } else {
+    db.ref('users').child(user.id).child('mess').set([conversation.conversationId]);
+  }
 }
 module.exports = {
   getAllUsers,

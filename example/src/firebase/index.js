@@ -559,6 +559,26 @@ const addConversation = async conversation => {
     db.ref('users').child(user.id).child('mess').set([conversation.conversationId]);
   }
 }
+const deleteConversation = async(conversation) => {
+  db
+    .ref('conversations')
+    .child(conversation.conversationId)
+    .remove();
+  let user = await getUser(conversation.idUser2);
+  if (user.mess) {
+    user.mess = user.mess.filter(function (item) {
+      return item !== conversation.conversationId
+    })
+    db.ref('users').child(user.id).child('mess').set(user.mess);
+  }
+  user = await getUser(conversation.idUser1);
+  if (user.mess) {
+    user.mess = user.mess.filter(function (item) {
+      return item !== conversation.conversationId
+    })
+    db.ref('users').child(user.id).child('mess').set(user.mess);
+  }
+}
 module.exports = {
   getAllUsers,
   getAllUsersImage,
@@ -585,6 +605,7 @@ module.exports = {
   addMsgToConversation,
   addConversation,
   getConversationBetween2User,
+  deleteConversation,
   deleteImage,
   uploadImage,
   removePostImage

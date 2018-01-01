@@ -234,11 +234,14 @@ router.post(
       /** remove images */
     }
     if (postImages) {
+      let postImgLinks = await firebase.getAllPostImageLink(post.postId);
+      let imgCount = postImgLinks.length;
       postImages.forEach(image => {
         firebase.uploadImage(
           image.path,
-          'postImages/' + post.postId + '/' + image.originalname
+          'postImages/' + post.postId + '/' + 'image_no_' + imgCount + '.' + image.mimetype.split('/')[1]
         );
+        imgCount++;
       });
     }
     if (deleteMedia) {

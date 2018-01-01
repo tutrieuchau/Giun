@@ -28,6 +28,9 @@ html(lang='en')
     link(rel="stylesheet", href="../css/datatables.min.css")
     //custom
     link(rel="stylesheet", href="../css/customs/custom.css")
+    //rating
+    link(href='../menu/plugins/rating/css/star-rating.css', media="all",rel="stylesheet",type="text/css")
+    link(href="../menu/plugins/rating/themes/krajee-svg/theme.css" media="all" rel="stylesheet" type="text/css")
     block css
   body.fix-header
     // ==============================================================
@@ -123,7 +126,7 @@ html(lang='en')
       // ==============================================================
       script(src='../menu/plugins/bower_components/jquery/dist/jquery.min.js')
       // Bootstrap Core JavaScript
-      script(src='../bootstrap/dist/js/bootstrap.min.js')
+      script(src='../menu/bootstrap/dist/js/bootstrap.min.js')
       // Menu Plugin JavaScript
       script(src='../menu/plugins/bower_components/sidebar-nav/dist/sidebar-nav.min.js')
       script(src='../js/jquery.slimscroll.js')
@@ -141,6 +144,7 @@ html(lang='en')
       script(src='../menu/plugins/bower_components/toast-master/js/jquery.toast.js')
       //datatable
       script(src='../js/datatables.min.js')
-      // chat firebase
-      script(src='https://cdn.firebase.com/js/client/2.2.1/firebase.js')
+      // staring
+      script(src="../menu/plugins/rating/js/star-rating.js")
+
       block scripts

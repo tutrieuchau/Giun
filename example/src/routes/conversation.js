@@ -60,6 +60,12 @@ router.get('/:id', async(req, res) => {
         time: date.getTime()
       }];
     }
+  } else if (conversationId.indexOf('deleteConversation') > -1) {
+    conversationId = conversationId.replace('deleteConversation', '');
+    conversation = await firebase.getConversation(conversationId);
+    firebase.deleteConversation(conversation);
+    res.redirect('/conversation');
+    return;
   } else {
     conversation = await firebase.getConversation(conversationId);
   }

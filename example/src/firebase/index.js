@@ -81,7 +81,7 @@ const getAllUserPosts = async userId => {
           return;
         }
         snapshot.val().forEach(post => {
-          if (post.ownerId === userId) {
+          if (post.ownerId == userId) {
             post['shortContent'] = post.description.substring(0, 20) + '...';
             posts.push(post);
           }
@@ -95,16 +95,18 @@ const getAllUserPosts = async userId => {
   });
 };
 const addUser = async user => {
-  admin.auth().createUser({
-    uid: user.id,
-    email: user.email,
-    password: user.password,
-    displayName: user.name
-  });
+  let password = user.password;
+  delete user.password;
   db
     .ref('users')
     .child(user.id)
     .set(user);
+  admin.auth().createUser({
+    uid: user.id,
+    email: user.email,
+    password: password,
+    displayName: user.name
+  });
 };
 const updateUser = user => {
   if (user.password != "") {
@@ -174,6 +176,7 @@ const addPost = post => {
     .child(post.postId)
     .set(post);
   updatePostCount(post.postId)
+  updateUserPost(post.ownerId, post.postId)
 };
 const updatePost = post => {
   db
@@ -208,11 +211,28 @@ const updatePostCount = postCount => {
     .ref('postCount')
     .set(postCount)
 }
-const removePost = postId => {
+const updateUserPost = async(userId, postId) => {
+  let post = await getAllUserPosts(userId);
+  let postNum = post ? post.length + 1 : 0;
+  db.ref('users').child(userId).child('posts').child(postNum).set(postId);
+}
+const removeUserPost = (userId, postId) => {
+  db.ref('users').child(userId).child('posts').on('value', snapshot => {
+    if (snapshot) {
+      for (let i = 0; i < snapshot.val().length; i++) {
+        if (snapshot.val()[i] == postId) {
+          db.ref('users').child(userId).child('posts').child(i).remove();
+        }
+      }
+    }
+  })
+}
+const removePost = (userId, postId) => {
   db
     .ref('posts')
     .child(postId)
     .remove();
+  removeUserPost(userId, postId);
 };
 /* ****************** */
 /** Firebase Storage */
@@ -227,8 +247,8 @@ const getAllUsersImage = () => {
         allFiles.forEach(file => {
           if (
             file.name.includes('userImages') &&
-            (file.metadata.contentType === 'image/jpeg' ||
-              file.metadata.contentType === 'image/png')
+            (file.metadata.contentType == 'image/jpeg' ||
+              file.metadata.contentType == 'image/png')
           ) {
             returnFiles.push(file);
           }
@@ -388,7 +408,7 @@ const getAllCategoryCount = () => {
           return;
         }
         posts.forEach(post => {
-          let tempCategory = categoriesCount.find(ob => ob.id === post.category);
+          let tempCategory = categoriesCount.find(ob => ob.id == post.category);
           if (tempCategory) {
             tempCategory.postCount++;
           } else {
@@ -419,7 +439,7 @@ const getAllPostsOfCategory = categoryId => {
           return;
         }
         snapshot.val().forEach(post => {
-          if (post.category === categoryId) {
+          if (post.category == categoryId) {
             posts.push(post);
           }
         });

@@ -95,7 +95,6 @@ router.post('/', upload.single('avatarImages'), (req, res, next) => {
   let avatar = req.file;
   if (user.type == 'add') {
     user.id = userId;
-    user['instanceId'] = userId;
     user['posts'] = [];
     user['mess'] = [];
     user['followingUsers'] = [];
@@ -108,7 +107,7 @@ router.post('/', upload.single('avatarImages'), (req, res, next) => {
       user['avatarLink'] = 'userImages/default_profile.jpg';
     }
     delete user.type;
-    delete user.bkAvatarLink
+    delete user.bkAvatarLink;
     firebase.addUser(user);
   } else {
     if (avatar) {

@@ -464,6 +464,32 @@ const addMsgToConversation = (msg, conversationId) => {
       lastMessTime: msg.time
     });
 }
+const getConversationBetween2User = (user1Id, user2Id) => {
+  return new Promise((resolve, reject) => {
+    db
+      .ref('conversations')
+      .on(
+        'value',
+        snapshot => {
+          let conversations = snapshot.val();
+          let conversation;
+          if (conversations) {
+            Object.keys(conversations).forEach(key => {
+              if (conversations[key].idUser1 == user1Id && conversations[key].idUser2 == user2Id) {
+                conversation = conversations[key];
+                return;
+              }
+            })
+            resolve(conversation);
+          }
+        },
+        err => {
+          reject(err);
+          console.log(err);
+        }
+      );
+  });
+}
 const addConversation = conversation => {
   db
     .ref('conversations')
@@ -495,6 +521,7 @@ module.exports = {
   getConversation,
   addMsgToConversation,
   addConversation,
+  getConversationBetween2User,
   deleteImage,
   uploadImage,
   removePostImage

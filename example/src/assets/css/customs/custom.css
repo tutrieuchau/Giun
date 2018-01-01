@@ -209,6 +209,20 @@
 .chatBox{
   height: 100px;
 }
+.chat-preview-panel{
+  position: absolute;
+  overflow-y: scroll;
+  bottom: 115px;
+  right: 0%;
+  left: 250px;
+  top: 130px;
+}
+.chat-wrap{
+  position: absolute;
+  left: 250px;
+  right: 0%;
+  bottom: 15px;
+}
 #conversationTable tbody > tr > td {
   white-space: nowrap;
   padding: 15px 8px;

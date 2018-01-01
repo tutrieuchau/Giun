@@ -8,14 +8,14 @@ block body
             h4.page-title Conversation Detail
     .row
         .nostyle
-            .white-box(style="height: 650px;overflow:scroll")
+            .chat-preview-panel.white-box()
                ul#chatReview.chat-ul 
                     each message in conversation.mess
                         if message.author == conversation.user1.id
                             li(style='width:100%')
                                 .msj.macro
                                     .chat-avatar
-                                        img.img-circle(style='height:40px;width:40px', src=conversation.user1.avatarLink)
+                                        img.img-circle(style='height:40px;width:40px', src=conversation.user1.avatarLink, title=conversation.user1.name)
                                     .text.text-l
                                         p #{message.text}
                                         p
@@ -28,14 +28,14 @@ block body
                                         p
                                             small #{message.dateTime}
                                     .chat-avatar(style='padding:0px 0px 0px 10px !important')
-                                        img.img-circle(style='height:40px;width:40px', src=conversation.user2.avatarLink)
+                                        img.img-circle(style='height:40px;width:40px', src=conversation.user2.avatarLink ,title=conversation.user2.name)
     if  conversation.user1.id == admin.id
         .row 
-            .nostyle(style="position: fixed;top: 750px;width: 100%;")
+            .chat-wrap.nostyle()
                 .chatBox.white-box
                     .form-group
                         .col-md-12
-                            input#enterChat.form-control.form-control-line(type="text",onkeypress="pressEnterInChat(event);",style="width:80%",placeholder = "Type a message then enter")
+                            input#enterChat.form-control.form-control-line(type="text",onkeypress="pressEnterInChat(event);",placeholder = "Type a message then enter")
 block scripts
     script.
         var admin = !{JSON.stringify(admin)}
@@ -92,7 +92,7 @@ block scripts
                 result.msg.forEach(message=> {
                     let date = new Date(message.time);
                     let dateTime =  date.getHours() + ':' + date.getMinutes() + ' ' + date.getDate() + '/' + (date.getMonth() + 1);
-                    let chatBox = '<li style="width:40%">'
+                    let chatBox = '<li style="width:100%">'
                         +'<div class ="msj-rta macro">'
                             + '<div class ="text text-r">'
                                 + '<p>'+ message.text+'</p>'

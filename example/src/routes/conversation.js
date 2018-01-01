@@ -28,31 +28,34 @@ router.get('/:id', async(req, res) => {
   if (conversationId.indexOf('add$') > -1) {
     let date = new Date();
     let user2Id = conversationId.replace('add$', '');
-    conversationId = randomstring.generate(58);
-    conversation = {
-      conversationId: conversationId,
-      idUser1: req.session.user.id,
-      idUser2: user2Id,
-      lastMessId: 1,
-      lastMessTime: date.getTime(),
-      lastUser1Mess: 1,
-      lastUser2Mess: 0,
-      mess: {
-        1: {
-          author: req.session.user.id,
-          id: 1,
-          text: 'hello',
-          time: date.getTime()
+    conversation = await firebase.getConversationBetween2User(req.session.user.id, user2Id);
+    if (!conversation) {
+      conversationId = randomstring.generate(58);
+      conversation = {
+        conversationId: conversationId,
+        idUser1: req.session.user.id,
+        idUser2: user2Id,
+        lastMessId: 1,
+        lastMessTime: date.getTime(),
+        lastUser1Mess: 1,
+        lastUser2Mess: 0,
+        mess: {
+          1: {
+            author: req.session.user.id,
+            id: 1,
+            text: 'hello',
+            time: date.getTime()
+          }
         }
       }
+      firebase.addConversation(conversation);
+      conversation.mess = [{
+        author: req.session.user.id,
+        id: 1,
+        text: 'hello',
+        time: date.getTime()
+      }];
     }
-    firebase.addConversation(conversation);
-    conversation.mess = [{
-      author: req.session.user.id,
-      id: 1,
-      text: 'hello',
-      time: date.getTime()
-    }];
   } else {
     conversation = await firebase.getConversation(conversationId);
   }

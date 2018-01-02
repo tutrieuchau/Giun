@@ -104,7 +104,8 @@ router.get('/:id', async(req, res) => {
   }
 
   if (postId.indexOf('deletePost') > -1) {
-    let post = await firebase.getPost(postId.replace('deletePost', ''));
+    postId = postId.replace('deletePost', '');
+    let post = await firebase.getPost(parseInt(postId));
     firebase.removePost(post.ownerId, parseInt(postId.replace('deletePost', '')));
     firebase.removePostImage(postId.replace('deletePost', ''));
     if (req.headers.referer && req.headers.referer.indexOf('dashboard') > -1) {

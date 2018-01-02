@@ -1,5 +1,4 @@
 var admin = require('firebase-admin');
-const path = require('path');
 var fs = require('fs');
 
 var serviceAccount = require('../../serviceAccountKey.json');
@@ -17,7 +16,7 @@ const getAllUsers = async() => {
     ref.on(
       'value',
       snapshot => {
-        resolve(snapshot.val());
+        resolve(convertObjectToArray(snapshot.val()));
       },
       err => {
         reject(err);
@@ -50,23 +49,20 @@ const getUser = async userId => {
 /** search user by username */
 const getUserByUsername = async username => {
   return new Promise((resolve, reject) => {
-    db.ref('users').on(
-      'value',
-      snapshot => {
-        if (snapshot) {
-          Object.keys(snapshot.val()).forEach(function (key) {
-            let user = snapshot.val()[key];
-            if (user.name == username) {
-              resolve(user);
-              return;
-            }
-          }, this);
+    db
+      .ref('users')
+      .orderByChild('name')
+      .equalTo(username)
+      .on(
+        'value',
+        snapshot => {
+          let user = snapshot.val();
+          resolve(user[Object.keys(user)[0]]);
+        },
+        err => {
+          reject(err);
         }
-      },
-      err => {
-        reject(err);
-      }
-    );
+      );
   });
 }
 /** Get User Post By Id */
@@ -76,28 +72,18 @@ const getAllUserPosts = async userId => {
       'value',
       snapshot => {
         let returnPosts = [];
-        let posts = snapshot.val();
-        if (posts) {
-          if (!Array.isArray(posts)) {
-            let tmpPost = [];
-            Object.keys(posts).forEach(function (key) {
-              tmpPost.push(posts[key]);
-            }, this);
-            posts = tmpPost;
+        let posts = convertObjectToArray(snapshot.val());
+        posts.forEach(post => {
+          if (post.ownerId == userId) {
+            post['shortContent'] = post.description.substring(0, 20) + '...';
+            returnPosts.push(post);
           }
-          posts.forEach(post => {
-            if (post.ownerId == userId) {
-              post['shortContent'] = post.description.substring(0, 20) + '...';
-              returnPosts.push(post);
-            }
-          });
-        }
+        });
         resolve(returnPosts);
       },
       err => {
         reject(err);
-      }
-    );
+      });
   });
 };
 const addUser = async user => {
@@ -144,13 +130,14 @@ const removeUser = userId => {
     .child(userId)
     .remove();
 };
+
 const getAllPost = () => {
   let ref = db.ref('posts');
   return new Promise((resolve, reject) => {
     ref.on(
       'value',
       snapshot => {
-        resolve(snapshot.val());
+        resolve(convertObjectToArray(snapshot.val()));
       },
       err => {
         reject(err);
@@ -159,11 +146,29 @@ const getAllPost = () => {
     );
   });
 };
-const getPost = postID => {
+const getPost = postId => {
   return new Promise((resolve, reject) => {
     db
       .ref('posts')
-      .child(postID)
+      .orderByChild('postId')
+      .equalTo(postId)
+      .on(
+        'value',
+        snapshot => {
+          let post = snapshot.val();
+          resolve(post[Object.keys(post)[0]]);
+        },
+        err => {
+          reject(err);
+          console.log(err);
+        }
+      );
+  });
+};
+const getPostCount = () => {
+  return new Promise((resolve, reject) => {
+    db
+      .ref('postCount')
       .on(
         'value',
         snapshot => {
@@ -175,7 +180,14 @@ const getPost = postID => {
         }
       );
   });
-};
+}
+// const addPost = async post => {
+//   let posts = await getAllPost();
+//   posts.push(post);
+//   db.ref('posts').set(posts);
+//   updateUserPost(post.ownerId, post.postId);
+//   updatePostCount(post.postId);
+// };
 const addPost = post => {
   updateUserPost(post.ownerId, post.postId)
   db
@@ -196,22 +208,6 @@ const updatePost = post => {
       location: post.location
     });
 };
-const getPostCount = () => {
-  return new Promise((resolve, reject) => {
-    db
-      .ref('postCount')
-      .on(
-        'value',
-        snapshot => {
-          resolve(snapshot.val());
-        },
-        err => {
-          reject(err);
-          console.log(err);
-        }
-      );
-  });
-}
 const updatePostCount = postCount => {
   db
     .ref('postCount')
@@ -219,7 +215,6 @@ const updatePostCount = postCount => {
 }
 const updateUserPost = async(userId, postId) => {
   let user = await getUser(userId);
-  let postCount = 0;
   if (user && user.posts) {
     user.posts.push(postId);
     db.ref('users').child(userId).child('posts').set(user.posts);
@@ -239,6 +234,14 @@ const removeUserPost = (userId, postId) => {
     }
   })
 }
+// const removePost = async(userId, postId) => {
+//   removeUserPost(userId, postId);
+//   let posts = await getAllPost();
+//   posts = posts.filter(item => {
+//     return item && item.postId != postId;
+//   });
+//   db.ref('posts').set(posts);
+// };
 const removePost = (userId, postId) => {
   removeUserPost(userId, postId);
   db
@@ -305,36 +308,6 @@ const deleteImage = imageId => {
     .delete();
 };
 
-const getAllPostImage = postId => {
-  let postImgFolder = path.join(
-    __dirname,
-    '../assets/firebase/postImages/',
-    postId
-  );
-  try {
-    fs.statSync(postImgFolder);
-  } catch (e) {
-    fs.mkdirSync(postImgFolder);
-  }
-  return new Promise((resolve, reject) => {
-    storage
-      .bucket()
-      .getFiles()
-      .then(async results => {
-        const allFiles = results[0];
-        let returnFiles = [];
-        for (let index = 0; index < allFiles.length; index++) {
-          let file = allFiles[index];
-          if (file.name.includes('postImages/' + postId)) {
-            returnFiles.push(file.name);
-            await downloadPostImage(file.name);
-          }
-        }
-        resolve(returnFiles);
-      });
-  });
-};
-
 const getAllPostImageLink = postId => {
   return new Promise((resolve, reject) => {
     storage
@@ -388,22 +361,6 @@ const getPostFileLink = fileName => {
       })
       .catch(error => {
         reject(error);
-      });
-  });
-};
-
-const downloadPostImage = imageName => {
-  const options = {
-    destination: path.join(__dirname, '../assets/firebase/', imageName)
-  };
-  return new Promise((resolve, reject) => {
-    storage
-      .bucket()
-      .file(imageName)
-      .download(options)
-      .then(() => {
-        console.log('download file:' + imageName + ' complete');
-        resolve();
       });
   });
 };
@@ -579,6 +536,22 @@ const deleteConversation = async(conversation) => {
     db.ref('users').child(user.id).child('mess').set(user.mess);
   }
 }
+const convertObjectToArray = object => {
+  let array = [];
+  if (!Array.isArray(object)) {
+    Object.keys(object).forEach(function (key) {
+      if (object[key] != undefined) {
+        array.push(object[key]);
+      }
+    }, this);
+
+  } else {
+    array = object.filter(item => {
+      return item !== undefined;
+    });
+  }
+  return array;
+}
 module.exports = {
   getAllUsers,
   getAllUsersImage,
@@ -590,14 +563,12 @@ module.exports = {
   getUserAvatarLink,
   getAllUserPosts,
   getAllPost,
-  getAllPostImage,
   getAllPostImageLink,
   getPost,
   updatePost,
   removePost,
   addPost,
   getPostCount,
-  downloadPostImage,
   getAllCategoryCount,
   getAllPostsOfCategory,
   getAllConversations,

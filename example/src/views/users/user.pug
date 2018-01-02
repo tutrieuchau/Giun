@@ -21,6 +21,7 @@ block body
                             th Email
                             th Phone Number
                             th Address
+                            th Follow Users
                             th Posts
                             th
                             th
@@ -32,7 +33,11 @@ block body
                                     td= user.email
                                     td= user.phoneNumber
                                     td= user.address
-                                    td #{user.posts ? user.posts.length : 0 }
+                                    if user.followingUsers
+                                        td(style="text-align:center")=user.followingUsers.length
+                                    else
+                                        td(style="text-align:center") 0
+                                    td(style="text-align:center") #{user.posts ? user.posts.length : 0 }
                                     td 
                                         a(href='/users/'+user.id)
                                             i.fa.fa-pencil

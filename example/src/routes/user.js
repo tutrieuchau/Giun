@@ -15,15 +15,8 @@ router.get('/', async(req, res) => {
   }
 
   let users = await firebase.getAllUsers();
-  /** Convert users object to array */
-  let userArray = [];
-  Object.keys(users).forEach(function (key) {
-    if (users[key].name !== 'admin') {
-      userArray.push(users[key]);
-    }
-  }, this);
   res.render('users/user', {
-    users: userArray,
+    users: users,
     admin: req.session.user
   });
 });
@@ -66,18 +59,27 @@ router.get('/:id', async(req, res) => {
   }
 
   let user = await firebase.getUser(userId);
-  let userPosts = await firebase.getAllUserPosts(userId);
   if (!user) {
     res.redirect('/404');
     return;
-  } else {
-    res.render('users/profile', {
-      user: user,
-      type: 'edit',
-      posts: userPosts,
-      admin: req.session.user
-    });
   }
+  let userPosts = await firebase.getAllUserPosts(userId);
+  let followingUsers = [];
+  if (user.followingUsers) {
+    for (let i = 0; i < user.followingUsers.length; i++) {
+      let followingUser = await firebase.getUser(user.followingUsers[i]);
+      if (followingUser) {
+        followingUsers.push(followingUser);
+      }
+    }
+  }
+  res.render('users/profile', {
+    user: user,
+    type: 'edit',
+    posts: userPosts,
+    admin: req.session.user,
+    followingUsers: followingUsers
+  });
 });
 router.post('/', upload.single('avatarImages'), (req, res, next) => {
   /** check login */

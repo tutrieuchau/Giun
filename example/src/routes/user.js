@@ -53,7 +53,8 @@ router.get('/:id', async(req, res) => {
     });
     return;
   } else if (userId.indexOf('deleteUser') > -1) {
-    firebase.removeUser(userId.replace('deleteUser', ''));
+    let user = await firebase.getUser(userId.replace('deleteUser', ''));
+    firebase.removeUser(user);
     res.redirect('/users');
     return;
   }

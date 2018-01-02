@@ -12,12 +12,16 @@ router.get('/', async(req, res) => {
   const users = await firebase.getAllUsers();
   let conversationArray = [];
   Object.keys(conversations).forEach(key => {
-    conversations[key]['user1'] = users[conversations[key].idUser1];
-    conversations[key]['user2'] = users[conversations[key].idUser2];
+    conversations[key]['user1'] = users.filter(user => {
+      return user.id == conversations[key].idUser1
+    })[0];
+    conversations[key]['user2'] = users.filter(user => {
+      return user.id == conversations[key].idUser2
+    })[0];
     conversationArray.push(conversations[key]);
   }, this);
   res.render('conversation/conversation', {
-    conversations: conversations,
+    conversations: conversationArray,
     admin: req.session.user
   });
 });

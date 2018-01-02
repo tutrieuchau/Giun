@@ -25,17 +25,11 @@ router.get('/', async(req, res) => {
   let posts = await firebase.getAllPost();
   let users = await firebase.getAllUsers();
   let returnPosts = [];
-
-  if (!Array.isArray(posts)) {
-    let tmpPost = [];
-    Object.keys(posts).forEach(function (key) {
-      tmpPost.push(posts[key]);
-    }, this);
-    posts = tmpPost;
-  }
   /** remote undefine object */
   posts.forEach(post => {
-    let authorOb = users[post.ownerId];
+    let authorOb = users.filter(user => {
+      return user.id == post.ownerId;
+    })[0];
     post.category = CATEGORY[post.category - 1];
     post['author'] = authorOb ? authorOb.name : 'Admin';
     post['shortContent'] = post.description.substring(0, 30) + '...';
@@ -56,16 +50,13 @@ router.get('/:id', async(req, res) => {
     return;
   }
   let postId = req.params.id;
-  if (postId === 'add') {
+  let defaultUser = req.session.user;
+  if (postId == 'add') {
     let post = {
       description: '',
       comments: []
     };
-    let user = {
-      name: 'admin',
-      email: 'admin@pikerfree.com',
-      avatarLink: '/firebase/userImages/default_profile.jpg'
-    };
+    let user = defaultUser;
     let users = await firebase.getAllUsers();
     res.render('posts/details', {
       post: post,
@@ -82,11 +73,7 @@ router.get('/:id', async(req, res) => {
     let userId = postId.substring(4);
     let user = await firebase.getUser(userId);
     if (!user) {
-      user = {
-        name: 'admin',
-        email: 'admin@pikerfree.com',
-        avatarLink: '/firebase/userImages/default_profile.jpg'
-      };
+      user = defaultUser;
     }
     let post = {
       description: '',
@@ -106,22 +93,20 @@ router.get('/:id', async(req, res) => {
   if (postId.indexOf('deletePost') > -1) {
     postId = postId.replace('deletePost', '');
     let post = await firebase.getPost(parseInt(postId));
-    firebase.removePost(post.ownerId, parseInt(postId.replace('deletePost', '')));
-    firebase.removePostImage(postId.replace('deletePost', ''));
+    if (post) {
+      firebase.removePost(post.ownerId, parseInt(postId.replace('deletePost', '')));
+      firebase.removePostImage(postId.replace('deletePost', ''));
+    }
     if (req.headers.referer && req.headers.referer.indexOf('dashboard') > -1) {
       res.redirect('/dashboard');
     } else {
       res.redirect('/posts');
     }
   } else {
-    let post = await firebase.getPost(postId);
+    let post = await firebase.getPost(parseInt(postId));
     let user = await firebase.getUser(post.ownerId);
     if (!user) {
-      user = {
-        name: 'admin',
-        email: 'admin@pikerfree.com',
-        avatarLink: '/firebase/userImages/default_profile.jpg'
-      };
+      user = defaultUser;
     }
     if (post.comments) {
       for (let index = 0; index < post.comments.length; index++) {

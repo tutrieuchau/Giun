@@ -21,16 +21,11 @@ router.get('/', async(req, res) => {
   let posts = await firebase.getAllPost();
   let users = await firebase.getAllUsers();
   let returnPosts = [];
-  if (!Array.isArray(posts)) {
-    let tmpPost = [];
-    Object.keys(posts).forEach(function (key) {
-      tmpPost.push(posts[key]);
-    }, this);
-    posts = tmpPost;
-  }
   /** remote undefine object */
   posts.forEach(post => {
-    let authorOb = users[post.ownerId];
+    let authorOb = users.filter(user => {
+      return user.id == post.ownerId;
+    })[0];
     post.category = CATEGORY[post.category - 1];
     post['author'] = authorOb ? authorOb.name : 'Admin';
     post['shortContent'] = post.description.substring(0, 30) + '...';

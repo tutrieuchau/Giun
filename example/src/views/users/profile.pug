@@ -29,22 +29,23 @@ block body
                                     td 
                                         a(href='/posts/'+ post.postId) #{post.title}
                                     td= post.shortContent
-            .white-box
-                h3.box-title FOLLOWING USERS
-                .table-responsive
-                    table.table
-                        thead
-                            th Name
-                            th Post
-                        tbody
-                            each follow in followingUsers
-                                tr(data-expanded='true')
-                                    td 
-                                        a(href='/users/'+ follow.id) #{follow.name}
-                                    if follow.posts
-                                        td=follow.posts.length
-                                    else
-                                        td 0
+            if followingUsers
+                .white-box
+                    h3.box-title FOLLOWING USERS
+                    .table-responsive
+                        table.table
+                            thead
+                                th Name
+                                th Post
+                            tbody
+                                each follow in followingUsers
+                                    tr(data-expanded='true')
+                                        td 
+                                            a(href='/users/'+ follow.id) #{follow.name}
+                                        if follow.posts
+                                            td=follow.posts.length
+                                        else
+                                            td 0
         .col-md-8.col-xs-12
             .white-box
                 form.form-horizontal.form-material(method='POST',action='/users',enctype="multipart/form-data",onsubmit="return validateForm()")

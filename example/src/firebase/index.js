@@ -10,6 +10,7 @@ admin.initializeApp({
 });
 const db = admin.database();
 const storage = admin.storage();
+
 const getAllUsers = async() => {
   let ref = db.ref('users');
   return new Promise((resolve, reject) => {
@@ -123,11 +124,50 @@ const updateUser = user => {
       rating: user.rating
     });
 };
-const removeUser = userId => {
-  admin.auth().deleteUser(userId);
+const removeUser = async user => {
+  // remove user's post
+  if (user.posts) {
+    user.posts.forEach(postId => {
+      removePost(user.id, postId);
+    });
+  }
+  if (user.mess) {
+    for (let i = 0; i < user.mess.length; i++) {
+      let conversation = await getConversation(user.mess[i])
+      deleteConversation(conversation);
+    }
+  }
+  // remove post comment
+  let posts = await getAllPost();
+  posts.forEach(post => {
+    if (post.comments) {
+      post.comments = post.comments.filter(n => {
+        return n.idUser != user.id;
+      });
+      db.ref('posts').child(post.postId).child('comments').set(post.comments);
+    }
+  });
+  // delete following users
+  let users = await getAllUsers();
+  users.forEach(ur => {
+    if (ur.followingUsers) {
+      ur.followingUsers = ur.followingUsers.filter(follow => {
+        return follow != user.id;
+      });
+      db.ref('users').child(ur.id).child('followingUsers').set(ur.followingUsers);
+    }
+    // delete rating user
+    if (ur.ratedUsers) {
+      ur.ratedUsers = ur.ratedUsers.filter(rated => {
+        return rated != user.id;
+      });
+      db.ref('users').child(ur.id).child('ratedUsers').set(ur.ratedUsers);
+    }
+  });
+  admin.auth().deleteUser(user.id);
   db
     .ref('users')
-    .child(userId)
+    .child(user.id)
     .remove();
 };
 
@@ -137,7 +177,11 @@ const getAllPost = () => {
     ref.on(
       'value',
       snapshot => {
-        resolve(convertObjectToArray(snapshot.val()));
+        if (snapshot.val()) {
+          resolve(convertObjectToArray(snapshot.val()));
+        } else {
+          resolve([]);
+        }
       },
       err => {
         reject(err);
@@ -156,7 +200,12 @@ const getPost = postId => {
         'value',
         snapshot => {
           let post = snapshot.val();
-          resolve(post[Object.keys(post)[0]]);
+          if (post) {
+            resolve(post[Object.keys(post)[0]]);
+          } else {
+            resolve(undefined);
+          }
+
         },
         err => {
           reject(err);
@@ -248,7 +297,6 @@ const removePost = (userId, postId) => {
     .ref('posts')
     .child(postId)
     .remove();
-
 };
 /* ****************** */
 /** Firebase Storage */
@@ -428,7 +476,11 @@ const getAllConversations = () => {
     db.ref('conversations').on(
       'value',
       snapshot => {
-        resolve(snapshot.val());
+        if (snapshot.val()) {
+          resolve(snapshot.val());
+        } else {
+          resolve({});
+        }
       },
       err => {
         reject(err);
@@ -486,8 +538,8 @@ const getConversationBetween2User = (user1Id, user2Id) => {
                 return;
               }
             })
-            resolve(conversation);
           }
+          resolve(conversation);
         },
         err => {
           reject(err);
@@ -522,14 +574,14 @@ const deleteConversation = async(conversation) => {
     .child(conversation.conversationId)
     .remove();
   let user = await getUser(conversation.idUser2);
-  if (user.mess) {
+  if (user && user.mess) {
     user.mess = user.mess.filter(function (item) {
       return item !== conversation.conversationId
     })
     db.ref('users').child(user.id).child('mess').set(user.mess);
   }
   user = await getUser(conversation.idUser1);
-  if (user.mess) {
+  if (user && user.mess) {
     user.mess = user.mess.filter(function (item) {
       return item !== conversation.conversationId
     })

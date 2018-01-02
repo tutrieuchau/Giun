@@ -205,7 +205,6 @@ const getPost = postId => {
           } else {
             resolve(undefined);
           }
-
         },
         err => {
           reject(err);

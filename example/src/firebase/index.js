@@ -163,6 +163,13 @@ const removeUser = async user => {
       });
       db.ref('users').child(ur.id).child('ratedUsers').set(ur.ratedUsers);
     }
+    // delete request user
+    if (ur.requestingUser) {
+      ur.requestingUser = ur.requestingUser.filter(rated => {
+        return rated != user.id;
+      });
+      db.ref('users').child(ur.id).child('requestingUser').set(ur.requestingUser);
+    }
   });
   admin.auth().deleteUser(user.id);
   db

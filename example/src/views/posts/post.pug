@@ -1,4 +1,4 @@
-extends main
+extends ../main
 
 block css
 
@@ -7,8 +7,6 @@ block body
     .row.bg-title
         .col-lg-3.col-md-4.col-sm-4.col-xs-12
             h4.page-title POSTS
-        // /.col-lg-12
-        // /row
     .row
         .col-sm-12
             .white-box
@@ -41,7 +39,6 @@ block body
                                         i.fa.fa-trash(data-toggle="modal",style="color: red",data-target="#confirmModal",data-delete=post.postId)
     #confirmModal.modal.fade(role='dialog')
         .modal-dialog
-            // Modal content
             .modal-content
                 .modal-header
                     h4.modal-title Do you want to delete it?

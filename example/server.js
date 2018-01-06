@@ -33,9 +33,9 @@ app.use(express.static(path.join(__dirname, 'src', 'assets')));
 app.use('/logs', express.static(path.join(__dirname, 'logs')));
 
 // Favicon
-app.use(
-  favicon(path.join(__dirname, 'src', 'assets', 'images', 'favicon.png'))
-);
+// app.use(
+//   favicon(path.join(__dirname, 'src', 'assets', 'images', 'favicon.png'))
+// );
 
 // App routes
 app.use('/', index.login);

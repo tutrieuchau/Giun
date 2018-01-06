@@ -17,7 +17,7 @@ router.get('/', async(req, res) => {
   let users = await firebase.getAllUsers();
   if (users) {
     users = users.filter(user => {
-      return user.name != 'admin'
+      return user.name != 'admin' && user.id
     });
   }
   res.render('users/user', {

@@ -17,6 +17,7 @@ block body
                             th First User
                             th Secound User
                             th Message
+                            th
                         tbody
                              each conversation in conversations
                                 if conversation.user1 && conversation.user2
@@ -33,7 +34,6 @@ block body
 
     #confirmModal.modal.fade(role='dialog')
         .modal-dialog
-            // Modal content
             .modal-content
                 .modal-header
                     h4.modal-title Do you want to delete it?
@@ -42,10 +42,9 @@ block body
                     a#deleteButton.btn.btn-danger(href='#') Yes, Do it
 block scripts
     script.
-        //- $('#conversationTable').DataTable({
-        //-     "bLengthChange": false
-        //- });
-
+        $('#conversationTable').DataTable({
+            "bLengthChange": false
+        });
         $('[data-delete]').click(event=>{
             document.getElementById("deleteButton").href= '/conversation/deleteConversation'+ event.target.attributes[4].nodeValue;
         });

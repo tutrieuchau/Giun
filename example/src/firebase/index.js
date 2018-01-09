@@ -202,7 +202,7 @@ const getPost = postId => {
     db
       .ref('posts')
       .orderByChild('postId')
-      .equalTo(postId)
+      .equalTo(parseInt(postId))
       .on(
         'value',
         snapshot => {
@@ -247,10 +247,16 @@ const addPost = post => {
   updateUserPost(post.ownerId, post.postId)
   db
     .ref('posts')
-    .child(post.postId)
+    .child(parseInt(post.postId))
     .set(post);
   updatePostCount(post.postId)
 };
+const updatePostComments = (postId, comments) => {
+  db.ref('posts')
+    .child(parseInt(postId))
+    .child('comments')
+    .set(comments);
+}
 const updatePost = post => {
   db
     .ref('posts')
@@ -626,6 +632,7 @@ module.exports = {
   updatePost,
   removePost,
   addPost,
+  updatePostComments,
   getPostCount,
   getAllCategoryCount,
   getAllPostsOfCategory,

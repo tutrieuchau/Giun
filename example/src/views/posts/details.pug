@@ -69,15 +69,14 @@ block body
                     .form-group
                         #hiddenField.col-sm-12
                             input#actionType.form-control.form-control-line(type='text',name='type',value=type,style='display:none')
-                            input#actionType.form-control.form-control-line(type='text',name='postId',value=post.postId,style='display:none')
+                            input#postId.form-control.form-control-line(type='text',name='postId',value=post.postId,style='display:none')
                             input#postFile.form-control.form-control-line(type="file",name="postImages",style="display:none",accept="image/*",multiple)
                             //- input#deleteMedia.form-control.form-control-line(type="text",name="deleteMedia",style="display:none")
                             if post.location
                                 input#location.form-control.form-control-line(type="text",name="location" value=post.location.latitude + "," + post.location.longitude,style="display:none")
                             else 
                                 input#location.form-control.form-control-line(type="text",name="location" value="10.870182,106.802919",style="display:none")
-                            each comment in post.comments
-                                input(type="text",name="comments[]",style="display:none" value=comment.no+"[$]"+comment.comment,data-comment-hidden=comment.no)
+                            
                     .form-group
                         .col-sm-4
                             button#btnAction.btn.btn-success Update Post
@@ -194,10 +193,9 @@ block scripts
                     +'</div>'
                 +'</div>';
                 $("#addComment").before(comment);
-                let input = '<input style="display:none" type="text" name="comments[]" data-comment-hidden-add ="'+commentNo+'" value="'+element.value+'" />';
+                let data = {type:'add',comment:element.value,postId:$('#postId').val()}
                 element.value = "";
-                $("#hiddenField").append(input);
-                /**Update script*/
+                editComment(data);
                 commentProcess();
             }
         }
@@ -211,33 +209,18 @@ block scripts
                     if(keyUpevent.keyCode == 13 && $el.text() != ''){
                         var $p = $('<p data-comment-content='+event.target.attributes[0].nodeValue+' title="'+$el.context.title+'"/>').text( $input.val() );
                         $input.replaceWith( $p );
-                        let element = $('[data-comment-hidden="'+event.target.attributes[0].nodeValue+'"]');
-                        if(element.length != 0){
-                            let inputHidden= '<input style="display:none" type="text" name="comments[]" data-comment-hidden ="'+event.target.attributes[0].nodeValue+'" value="'+element[0].value.split("[$]")[0] +"[$]"+ $input[0].value+'" />';
-                            element[0].parentNode.removeChild(element[0]);
-                            $("#hiddenField").append(inputHidden);
-
-                        }else{
-                            element = $('[data-comment-hidden-add="'+event.target.attributes[0].nodeValue+'"]');
-                            let inputHidden= '<input style="display:none" type="text" name="comments[]" data-comment-hidden-add="'+event.target.attributes[0].nodeValue+'" value="'+$input[0].value+'" />';
-                            element[0].parentNode.removeChild(element[0]);
-                            $("#hiddenField").append(inputHidden);
-                        }
+                        let data = {type:'edit',comment:$input.val(),postId:$('#postId').val(),commentId:event.target.attributes[0].nodeValue}
+                        editComment(data);
                     }
                 };
                 $input.on('keyup', save).focus();
             });
             /** On delete comment*/
             $('[data-comment-delete]').click(event =>{
+                let data = {type:'delete',postId:$('#postId').val(),commentId:event.target.attributes[0].nodeValue}
+                editComment(data);
                 let elem = $('[data-comment-box="'+event.target.attributes[0].nodeValue+'"]')[0];
-                elem.parentNode.removeChild(elem)
-                let element = $('[data-comment-hidden="'+event.target.attributes[0].nodeValue+'"]');
-                if(element.length != 0){
-                    element[0].parentNode.removeChild(element[0])
-                }else{
-                    element = $('[data-comment-hidden-add="'+event.target.attributes[0].nodeValue+'"]');
-                    element[0].parentNode.removeChild(element[0])
-                }
+                elem.parentNode.removeChild(elem);
             });
         }
         //google map
@@ -318,6 +301,16 @@ block scripts
                 let inputHidden= '<input style="display:none" id="location" type="text" name="location" value="'+ location.lat() + "," + location.lng() +'" />';
                 hiddenInputLocation.parentNode.removeChild(hiddenInputLocation);
                 $("#hiddenField").append(inputHidden);
+            });
+        }
+        function editComment(data){
+             $.ajax({
+                url: '/posts/comments',
+                type: 'post',
+                dataType: 'json',
+                success:data=>{
+                },
+                data:data
             });
         }
     //- script(src="https://maps.googleapis.com/maps/api/js?key=AIzaSyASvnkW0G2hWn7G_p-y56PEfgNrvkO_kCE&libraries=places")

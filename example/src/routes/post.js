@@ -172,50 +172,11 @@ router.post(
       } else {
         post['postId'] = 0;
       }
-      if (post.comments) {
-        let comments = [];
-        post.comments.forEach(comment => {
-          comments.push({
-            idUser: req.session.user.id,
-            comment: comment
-          });
-        });
-        post.comments = comments;
-      }
       post.category = parseInt(post.category);
       firebase.addPost(post);
     } else {
-      if (post.comments) {
-        let comments = [];
-        let oldPost = await firebase.getPost(post.postId);
-        if (oldPost && oldPost.comments) {
-          post.comments.forEach(comment => {
-            let cmId = comment.split('[$]')[0];
-            if (isNaN(cmId)) {
-              comments.push({
-                idUser: req.session.user.id,
-                comment: comment
-              });
-            } else {
-              let oldComment = oldPost.comments[parseInt(cmId)];
-              if (oldComment) {
-                oldComment.comment = comment.split('[$]')[1];
-                comments.push(oldComment);
-              }
-            }
-          });
-        } else {
-          post.comments.forEach(comment => {
-            comments.push({
-              idUser: req.session.user.id,
-              comment: comment
-            });
-          });
-        }
-        post.comments = comments;
-      } else {
-        post['comments'] = [];
-      }
+      delete post.type;
+      post['comments'] = [];
       firebase.updatePost(post);
       /** remove images */
     }
@@ -238,4 +199,32 @@ router.post(
     res.redirect('/posts');
   }
 );
+// Add Comment
+router.post('/comments', async(req, res) => {
+  let data = req.body;
+  // data.commentId /data.comment / data.idUser/data.postId
+  let post = await firebase.getPost(data.postId);
+  if (post && post.comments) {
+    if (data.type == 'add') {
+      post.comments.push({
+        comment: data.comment,
+        idUser: req.session.user.id
+      });
+    } else if (post && data.type == 'edit') {
+      post.comments[parseInt(data.commentId)].comment = data.comment;
+    } else if (data.type == 'delete') {
+      delete post.comments.splice(parseInt(data.commentId), 1);
+    }
+    firebase.updatePostComments(data.postId, post.comments);
+  } else if (post) {
+    if (data.type == 'add') {
+      post['comments'] = [{
+        comment: data.comment,
+        idUser: req.session.user.id
+      }];
+      firebase.updatePostComments(data.postId, post.comments);
+    }
+  }
+  res.json({});
+});
 module.exports = router;
